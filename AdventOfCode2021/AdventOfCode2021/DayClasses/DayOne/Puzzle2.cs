@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2021.DayClasses.DayOne
 {
-    using System.IO;
-
     public class Puzzle2
     {
         public Puzzle1 Puzzle1 { get; set; } = new Puzzle1();
@@ -28,21 +25,21 @@ namespace AdventOfCode2021.DayClasses.DayOne
         {
             var list = new List<int>();
 
-            foreach (var measurement in input)
+            for (int i = 0; i <= input.Count; i++)
             {
-                var indexOfMeasurement = input.IndexOf(measurement);
-                var indexOfMeasurementTwo = input.IndexOf(measurement)+1;
-                var indexOfMeasurementThree = indexOfMeasurementTwo+1;
-                var indexLast = input.IndexOf(input.Last());
+                try
+                {
+                    var threeView = input.GetRange(i, 3);
+                    
+                    var addition = threeView[0] + threeView[1] + threeView[2];
+                    Console.WriteLine($"{addition} = {threeView[0]} + {threeView[1]} + {threeView[2]}");
 
-                if (indexOfMeasurement >= indexLast - 1)
+                    list.Add(addition);
+                }
+                catch
                 {
                     continue;
                 }
-                
-                var addition = measurement + input[indexOfMeasurementTwo] + input[indexOfMeasurementThree];
-
-                list.Add(addition);
             }
 
             return list;
