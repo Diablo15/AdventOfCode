@@ -41,7 +41,7 @@ namespace AdventOfCode2021.DayClasses.DayTwo
             }
         }
 
-        public Dictionary<string, int> GetDirectionValues(List<Tuple<string, int>> inputList)
+        public virtual Dictionary<string, int> GetDirectionValues(List<Tuple<string, int>> inputList)
         {
             var dict = new Dictionary<string, int>
             {
