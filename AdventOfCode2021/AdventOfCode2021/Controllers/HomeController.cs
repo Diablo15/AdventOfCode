@@ -1,28 +1,18 @@
-﻿using AdventOfCode2021.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2021.Controllers
 {
-    using AdventOfCode2021.DayClasses.DayOne;
-
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
-            _logger = logger;
         }
 
         public void Index()
         {
-            var start = new Puzzle2();
+            var start = new DayClasses.DayTwo.Puzzle1();
             start.Start();
 
             return;
