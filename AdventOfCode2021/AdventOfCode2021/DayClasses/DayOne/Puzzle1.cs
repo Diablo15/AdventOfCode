@@ -15,37 +15,37 @@ namespace AdventOfCode2021.DayClasses.DayOne
 
         public void Start()
         {
-            this.ReadInputValues();
+            this.PuzzleOneMeasurements = new List<int>();
 
-            var total = this.CheckMeasurements();
+            this.ReadInputValues(this.PuzzleOneMeasurements);
+
+            var total = this.CheckMeasurements(this.PuzzleOneMeasurements);
 
             Console.WriteLine($"=========================== Total increasements: {total}");
         }
 
-        public List<int> ReadInputValues()
+        public List<int> ReadInputValues(List<int> outputList)
         {
             using (var reader = new StreamReader(@".\DayClasses\DayOne\inputpuzzle1.csv"))
             {
-                this.PuzzleOneMeasurements = new List<int>();
-
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(';');
 
-                    this.PuzzleOneMeasurements.Add(Convert.ToInt32(values[0]));
+                    outputList.Add(Convert.ToInt32(values[0]));
                 }
 
-                return this.PuzzleOneMeasurements;
+                return outputList;
             }
         }
 
-        public int CheckMeasurements()
+        public int CheckMeasurements(List<int> inputList)
         {
-            var oldMeasurement = PuzzleOneMeasurements[0];
+            var oldMeasurement = inputList[0];
             var increasingCount = 0;
                 
-            foreach (var measurement in PuzzleOneMeasurements)
+            foreach (var measurement in inputList)
             {
                 if (measurement < oldMeasurement)
                 {

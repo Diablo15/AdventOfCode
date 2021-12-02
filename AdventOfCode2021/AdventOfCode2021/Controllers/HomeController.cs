@@ -22,7 +22,7 @@ namespace AdventOfCode2021.Controllers
 
         public void Index()
         {
-            var start = new Puzzle1();
+            var start = new Puzzle2();
             start.Start();
 
             return;

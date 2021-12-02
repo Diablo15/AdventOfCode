@@ -2,3 +2,5 @@
 AdventOfCode2021/AdventOfCode2021/obj/*
 *.suo
 AdventOfCode2021/.vs/AdventOfCode2021/config/*
+*.suo
+*.cache
