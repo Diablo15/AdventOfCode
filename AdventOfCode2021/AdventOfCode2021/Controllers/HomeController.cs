@@ -12,7 +12,7 @@ namespace AdventOfCode2021.Controllers
 
         public void Index()
         {
-            var start = new DayClasses.DayThree.Puzzle1();
+            var start = new DayClasses.DayThree.Puzzle2();
             start.Start();
 
             return;

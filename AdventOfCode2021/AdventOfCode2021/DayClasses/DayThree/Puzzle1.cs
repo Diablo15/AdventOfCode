@@ -52,7 +52,7 @@
             return rateBits;
         }
 
-        public List<int> ConstructBinaryFromBits(List<RateBit> input)
+        public List<int> ConstructBinaryFromBits(List<RateBit> input, bool leastCommonValue = false)
         {
             var binaries = new List<int>();
             var gammaRates = new StringBuilder();
@@ -60,8 +60,8 @@
 
             foreach (var gammaBit in input)
             {
-                gammaRates.Append(GetCorrrectBit(gammaBit));
-                epsilonRate.Append(GetCorrrectBit(gammaBit, true));
+                gammaRates.Append(GetCorrrectBit(gammaBit, leastCommonValue));
+                epsilonRate.Append(GetCorrrectBit(gammaBit, leastCommonValue));
             }
 
             Console.WriteLine($"GammaRates: {gammaRates} - {Convert.ToInt32(gammaRates.ToString(), 2)}");
@@ -73,14 +73,14 @@
             return binaries;
         }
 
-        public char GetCorrrectBit(RateBit input, bool invert = false)
+        public char GetCorrrectBit(RateBit input, bool leastCommonValue)
         {
-            if (invert)
+            if (leastCommonValue)
             {
                 return input.Ones < input.Zeros ? '1' : '0';
             }
 
-            return input.Ones > input.Zeros ? '1' : '0';
+            return input.Ones >= input.Zeros ? '1' : '0';
         }
     }
 }
