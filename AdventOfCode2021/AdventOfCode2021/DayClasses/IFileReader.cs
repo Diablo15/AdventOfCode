@@ -8,6 +8,7 @@ namespace AdventOfCode2021.DayClasses
     public interface IFileReader
     {
         public List<string> ReadInputValues(string path, char delimiter = ' ');
+        public List<string> ReadInputValuesToLines(string path, int amountOfLines, char delimiter = ' ');
         public string[] ValueSplitter(string line, char delimiter);
     }
 }

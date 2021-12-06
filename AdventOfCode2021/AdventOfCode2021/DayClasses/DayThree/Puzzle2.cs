@@ -31,31 +31,26 @@ namespace AdventOfCode2021.DayClasses.DayThree
             Console.WriteLine($"=============Total = {oxyNumber} * {carbNumber} = {oxyNumber * carbNumber}");
         }
 
-        public List<string> DetermineRatings(List<string> diag, bool discardMostCommon)
+        public List<string> DetermineRatings(List<string> diagnostics, bool discardMostCommon)
         {
-            for(var i = 0; i < diag.First().Length; i++)
+            for(var i = 0; i < diagnostics.First().Length; i++)
             {
-                var positions = Puzzle1.ReadPositions(diag);
+                var positions = Puzzle1.ReadPositions(diagnostics);
 
-                diag = this.DiscardBits(positions, diag, i, discardMostCommon);
+                diagnostics = this.DiscardBits(positions, diagnostics, i, discardMostCommon);
 
-                foreach (var val in diag)
-                {
-                    Console.WriteLine(val);
-                }
-
-                if (i == diag.First().Length && diag.Count > 1)
+                if ((i == diagnostics.First().Length) && (diagnostics.Count > 1))
                 {
                     i = 0;
                 }
 
-                if (diag.Count == 1)
+                if (diagnostics.Count == 1)
                 {
                     break;
                 }
             }
 
-            return diag;
+            return diagnostics;
         }
 
         public List<string> DiscardBits(List<RateBit> input, List<string> ratings, int index, bool discardMostCommon = false)

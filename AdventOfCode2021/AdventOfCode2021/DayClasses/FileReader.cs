@@ -27,6 +27,24 @@ namespace AdventOfCode2021.DayClasses
                 return outputList;
             }
         }
+        
+        public List<string> ReadInputValuesToLines(string path, int amountOfLines, char delimiter = ' ')
+        {
+            var outputList = new List<string>();
+            using (var reader = new StreamReader(path))
+            {
+                var linesPassed = 0;
+                while ((amountOfLines > linesPassed) & !reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = this.ValueSplitter(line, delimiter);
+                    outputList.Add(values[0]);
+                    linesPassed++;
+                }
+
+                return outputList;
+            }
+        }
 
         public string[] ValueSplitter(string line, char delimiter)
         {
