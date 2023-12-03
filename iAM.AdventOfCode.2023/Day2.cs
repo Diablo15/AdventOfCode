@@ -27,18 +27,65 @@ public class Day2
     {
         Console.WriteLine("******** Day 2 ********");
         Puzzle1();
+        Puzzle2();
     }
 
     private void Puzzle1()
     {
         Console.WriteLine("******** Puzzle 1 ********");
         PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath, '\n');
-        var data = CreateGameData(this.PuzzleOneMeasurements.ToList()).ToList();
-        var result = CheckPossibleGames(data);
+        GameData = CreateGameData(this.PuzzleOneMeasurements.ToList()).ToList();
+        var result = CheckPossibleGames(GameData);
         var sum = result.Sum(x => x);
         Console.WriteLine($"1. ======== Total Sum == {sum}");
     }
+    
+    private void Puzzle2()
+    {
+        Console.WriteLine("******** Puzzle 2 ********");
+        var data = CheckFewestCubesNeeded(this.GameData);
+        
+        var sum = data.Sum(x => (x.Blue * x.Green * x.Red));
+        
+        Console.WriteLine($"2. ======== Total Sum == {sum}");
+    }
 
+    private IEnumerable<Set> CheckFewestCubesNeeded(List<Game> input)
+    {
+        var lowestSets = new List<Set>(); 
+        foreach (var game in input)
+        {
+            var lowSet = new Set
+            {
+                Blue = 0,
+                Green = 0,
+                Red = 0
+            };
+            
+            foreach (var set in game.Sets)
+            {
+                if (set.Blue > lowSet.Blue && set.Blue != 0)
+                {
+                    lowSet.Blue = set.Blue;
+                } 
+                
+                if (set.Green > lowSet.Green && set.Green != 0)
+                {
+                    lowSet.Green = set.Green;
+                }
+                
+                if (set.Red > lowSet.Red  && set.Red != 0)
+                {
+                    lowSet.Red = set.Red;
+                }
+            }
+            
+            lowestSets.Add(lowSet);
+        }
+
+        return lowestSets;
+    }
+        
     private IEnumerable<int> CheckPossibleGames(List<Game> input)
     {
         var result = new List<int>();
