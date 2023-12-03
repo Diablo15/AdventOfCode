@@ -6,7 +6,8 @@ using iAM.AdventOfCode._2023.Helpers;
 try
 {
     var reader = new FileReader();
-    new Day1(reader).StartDay1();
+    //new Day1(reader).StartDay1();
+    new Day2(reader).StartDay2();
 }
 catch (Exception ex)
 {

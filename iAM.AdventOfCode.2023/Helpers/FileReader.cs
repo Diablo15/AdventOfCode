@@ -38,7 +38,7 @@ public class FileReader : IFileReader
         }
     }
 
-    private IEnumerable<T> ValueSplitter<T>(string line, char delimiter)
+    public IEnumerable<T> ValueSplitter<T>(string line, char delimiter)
     {
         var result = new List<T>();
 
@@ -62,7 +62,7 @@ public class FileReader : IFileReader
         return result;
     }
 
-    private IEnumerable<Tuple<T1, T2>> ValueSplitter<T1, T2>(string line, char delimiter)
+    public IEnumerable<Tuple<T1, T2>> ValueSplitter<T1, T2>(string line, char delimiter)
     {
         var result = new List<Tuple<T1, T2>>();
 
