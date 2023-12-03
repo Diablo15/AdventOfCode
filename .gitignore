@@ -6,3 +6,5 @@ AdventOfCode2021/.vs/AdventOfCode2021/config/*
 *.cache
 *.v2
 *.idea
+bin/
+obj/
