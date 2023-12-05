@@ -8,7 +8,6 @@ public class Day2
 {
     private IEnumerable<string> PuzzleOneMeasurements { get; set; }
 
-
     private List<Game> GameData { get; set; }
 
     private IFileReader Reader { get; set; }
