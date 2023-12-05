@@ -4,7 +4,7 @@ using iAM.AdventOfCode._2023.Helpers;
 
 namespace iAM.AdventOfCode._2023;
 
-public class Day3
+public class Day3dup
 {
     private IEnumerable<string> PuzzleOneMeasurements { get; set; }
 
@@ -12,18 +12,25 @@ public class Day3
 
     private string Puzzle1FilePath = "Day3Puzzle1.txt";
 
-    private Regex DigitRegex = new(@"[\d]+");
+    private Regex DigitRegex = new(@"(\d)+");
+    
+    private List<Symbol> Symbols { get; set; }
 
-    public Day3(IFileReader reader)
+    private List<Number> Numbers { get; set; }
+
+    public Day3dup(IFileReader reader)
     {
         Reader = reader;
         PuzzleOneMeasurements = new List<string>();
+        Symbols = new List<Symbol>();
+        Numbers = new List<Number>();
     }
 
     public void StartDay3()
     {
         Console.WriteLine("******** Day 3 ********");
         Puzzle1();
+        Puzzle2();
     }
 
     private void Puzzle1()
@@ -31,127 +38,72 @@ public class Day3
         Console.WriteLine("******** Puzzle 1 ********");
         PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath, '\n');
 
-        var results = GetAllPartNumbers();
-        var sum = results.Sum(x => x);
+        var results = (GetPartNumbers()).ToList();
+        var sum = results.Sum(x => x.Value);
         
         Console.WriteLine($"1. ======== Total Sum == {sum}");
     }
-
-    private IEnumerable<int> GetAllPartNumbers()
+    
+    private void Puzzle2()
     {
-        var parts = new List<int>();
-        var regex = new Regex(@"[^\w\s.]");
-
-        MatchCollection previousSymbolMatches = null;
-        var previousLength = 0;
-
-        foreach (var line in PuzzleOneMeasurements)
-        {
-            var maxLenght = CheckMaxDigitsLength(line);
-            var matches = regex.Matches(line);
-
-            foreach (Match match in matches) parts.AddRange(CheckCurrentLine(match, line, maxLenght));
-
-            parts.AddRange(CheckPreviousLine(previousSymbolMatches, line, previousLength));
-
-            previousSymbolMatches = matches;
-            previousLength = maxLenght;
-        }
+        Console.WriteLine("******** Puzzle 2 ********");
         
-        return parts;
+        var sum = GetGearRatios();
+        
+        Console.WriteLine($"2. ======== Total Sum == {sum}");
     }
 
-    private IEnumerable<int> CheckPreviousLine(MatchCollection matches, string line, int length)
+   record Pos(int Row, int ColStart, int ColEnd)
     {
-        var numbers = new List<int>();
-
-        if (matches is null)
+        public bool IsAdjacent(Number number)
         {
-            return numbers;
+            // same row, directly above or below
+            if (Row < number.Pos.Row - 1 || Row > number.Pos.Row + 1)
+                return false;
+            // within or directly adjacent to the number's column range
+            return ColStart >= number.Pos.ColStart - 1 && ColStart <= number.Pos.ColEnd + 1;
+        }
+    };
+
+    record Symbol(string Value, Pos Pos);
+
+    record Number(int Value, Pos Pos);
+
+    private IEnumerable<Number> GetPartNumbers()
+    {
+        var symbolRegex = new Regex(@"[^\.\d\n]");
+
+        var lineNum = 0;
+        foreach (var line in this.PuzzleOneMeasurements.ToList())
+        {
+            foreach (Match nm in this.DigitRegex.Matches(line))
+                Numbers.Add(new Number(
+                    Value: int.Parse(nm.Value),
+                    Pos: new Pos(lineNum, nm.Index, nm.Index + nm.Length - 1)));
+
+            foreach (Match sm in symbolRegex.Matches(line))
+                Symbols.Add(new Symbol(
+                    Value: sm.Value,
+                    Pos: new Pos(lineNum, sm.Index, sm.Index)));
+
+            lineNum++;
         }
 
-        foreach (Match match in matches)
-        {
-            var leftMatch = DigitRegex.Match(line, match.Index + 1, length);
-            var leftNumber = ConvertToInt(leftMatch.Value);
-
-            if (leftNumber is not null)
-            {
-                numbers.Add(leftNumber.Value);
-            }
-            
-            var rightMatch = DigitRegex.Match(line, match.Index + 1, length);
-            var rightNumber = ConvertToInt(rightMatch.Value);
-
-            if (rightNumber is not null)
-            {
-                numbers.Add(rightNumber.Value);
-            }
-
-            var equalDiv = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(length - 1)));
-            var directMatch = DigitRegex.Match(line, match.Index - equalDiv, length + equalDiv);
-            
-            if(rightMatch.Value.Contains(directMatch.Value) || leftMatch.Value.Contains(directMatch.Value))
-            {
-                continue;
-            }
-            
-            var directNumber = ConvertToInt(directMatch.Value);
-
-            if (directNumber is not null)
-            {
-                numbers.Add(directNumber.Value);
-            }
-        }
-
-        return numbers;
+        return Numbers.Where(n => Symbols.Any(s => s.Pos.IsAdjacent(n)));
     }
 
-    private IEnumerable<int> CheckCurrentLine(Match match, string line, int length)
+    private int GetGearRatios()
     {
-        var numbers = new List<int>();
-
-        var rightMatch = DigitRegex.Match(line, match.Index + 1, length);
-        var rightNumber = ConvertToInt(rightMatch.Value);
-
-        if (rightNumber is not null)
-        {
-            numbers.Add(rightNumber.Value);
-        }
-
-        var leftMatch = DigitRegex.Match(line, match.Index - length, length);
-        var leftNumber = ConvertToInt(leftMatch.Value);
-
-        if (leftNumber is not null)
-        {
-            numbers.Add(leftNumber.Value);
-        }
-
-        return numbers;
-    }
-
-    private int CheckMaxDigitsLength(string line)
-    {
-        var matches = DigitRegex.Matches(line);
-        var maxLength = 0;
-        foreach (Match match in matches)
-        {
-            if (maxLength < match.Value.Length)
+        return Symbols
+            .Where(s => s.Value is "*")
+            .Sum(g =>
             {
-                maxLength = match.Value.Length;
-            }
-        }
-
-        return maxLength;
-    }
-
-    private int? ConvertToInt(string input)
-    {
-        if (!string.IsNullOrEmpty(input))
-        {
-            return Convert.ToInt32(input);
-        }
-
-        return null;
+                var adjacentNumbers = Numbers
+                    .Where(n => g.Pos.IsAdjacent(n))
+                    .ToList();
+                return adjacentNumbers.Count == 2
+                    ? adjacentNumbers.Aggregate(1, (acc, n) => acc * n.Value)
+                    : 0;
+            });
     }
 }
