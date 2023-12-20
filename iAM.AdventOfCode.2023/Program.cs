@@ -8,7 +8,8 @@ try
     var reader = new FileReader();
     //new Day1(reader).StartDay1();
     //new Day2(reader).StartDay2();
-    new Day3dup(reader).StartDay3();
+    //new Day3(reader).StartDay3();
+    new Day4(reader).StartDay4();
 }
 catch (Exception ex)
 {
