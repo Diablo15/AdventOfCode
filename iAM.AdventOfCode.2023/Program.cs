@@ -9,7 +9,8 @@ try
     //new Day1(reader).StartDay1();
     //new Day2(reader).StartDay2();
     //new Day3(reader).StartDay3();
-    new Day4(reader).StartDay4();
+    //new Day4(reader).StartDay4();
+    new Day5(reader).StartDay5();
 }
 catch (Exception ex)
 {

@@ -6,7 +6,7 @@ public class FileReader : IFileReader
     {
     }
 
-    public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ')
+    public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ', bool ignoreWhitLine = false)
     {
         var outputList = new List<T>();
         using (var reader = new StreamReader(@$"{AppDomain.CurrentDomain.BaseDirectory}Files\{path}"))
@@ -14,6 +14,12 @@ public class FileReader : IFileReader
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
+
+                if (ignoreWhitLine && string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
                 var values = ValueSplitter<T>(line, delimiter);
                 outputList.Add(values.First());
             }
@@ -84,5 +90,11 @@ public class FileReader : IFileReader
         }
 
         return result;
+    }
+
+    public string ValueRemover(string line, string toRemove)
+    {
+        var newValue = line.Replace(toRemove, string.Empty);
+        return newValue.Trim();
     }
 }

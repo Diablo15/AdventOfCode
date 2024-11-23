@@ -8,3 +8,4 @@ AdventOfCode2021/.vs/AdventOfCode2021/config/*
 *.idea
 bin/
 obj/
+/iAM.AdventOfCode.2021/obj

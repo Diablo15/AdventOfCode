@@ -2,18 +2,15 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>iAM.AdventOfCode._2023</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Files\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="Files\Day1Puzzle1.txt" />
+      <None Remove="Files\Day5Puzzle1.txt" />
       <Content Include="Files\Day1Puzzle1.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
@@ -27,6 +24,9 @@
       </Content>
       <None Remove="Files\Day4Puzzle1.txt" />
       <Content Include="Files\Day4Puzzle1.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Files\Day5Puzzle1.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
