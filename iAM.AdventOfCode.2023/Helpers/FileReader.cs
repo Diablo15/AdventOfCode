@@ -1,12 +1,8 @@
 namespace iAM.AdventOfCode._2023.Helpers;
 
-public class FileReader : IFileReader
+public class FileReader
 {
-    public FileReader()
-    {
-    }
-
-    public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ', bool ignoreWhitLine = false)
+    static public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ', bool ignoreWhitLine = false)
     {
         var outputList = new List<T>();
         using (var reader = new StreamReader(@$"{AppDomain.CurrentDomain.BaseDirectory}Files\{path}"))
@@ -28,7 +24,7 @@ public class FileReader : IFileReader
         }
     }
 
-    public IEnumerable<Tuple<T1, T2>> ReadInputValues<T1, T2>(string path, char delimiter = ' ')
+    static public IEnumerable<Tuple<T1, T2>> ReadInputValues<T1, T2>(string path, char delimiter = ' ')
     {
         var outputList = new List<Tuple<T1, T2>>();
         using (var reader = new StreamReader(@$"{AppDomain.CurrentDomain.BaseDirectory}Files\{path}"))
@@ -44,7 +40,7 @@ public class FileReader : IFileReader
         }
     }
 
-    public IEnumerable<T> ValueSplitter<T>(string line, char delimiter)
+    static public IEnumerable<T> ValueSplitter<T>(string line, char delimiter)
     {
         var result = new List<T>();
 
@@ -68,7 +64,7 @@ public class FileReader : IFileReader
         return result;
     }
 
-    public IEnumerable<Tuple<T1, T2>> ValueSplitter<T1, T2>(string line, char delimiter)
+    static public IEnumerable<Tuple<T1, T2>> ValueSplitter<T1, T2>(string line, char delimiter)
     {
         var result = new List<Tuple<T1, T2>>();
 
@@ -92,9 +88,9 @@ public class FileReader : IFileReader
         return result;
     }
 
-    public string ValueRemover(string line, string toRemove)
+    static public string ValueRemover(string line, string toRemove)
     {
-        var newValue = line.Replace(toRemove, string.Empty);
+        var newValue = line.Split(toRemove)[1];
         return newValue.Trim();
     }
 }

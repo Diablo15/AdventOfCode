@@ -1,34 +1,20 @@
-﻿using iAM.AdventOfCode._2023.Helpers;
-using System;
-using System.Collections.Concurrent;
+﻿using iAM.AdventOfCode._2023.Flaws;
+using iAM.AdventOfCode._2023.Helpers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace iAM.AdventOfCode._2023
 {
     public class Day5
     {
         private IEnumerable<string> PuzzleOneMeasurements { get; set; }
-        private IFileReader Reader { get; set; }
         private string Puzzle1FilePath = "Day5Puzzle1.txt";
 
-        private IEnumerable<string> Seeds { get; set; }
-        private Dictionary<long, long> SeedsToSoilMap { get; set; } = new();
-        private Dictionary<long, long> SoilToFertMap { get; set; } = new();
-        private Dictionary<long, long> FertToWaterMap { get; set; } = new();
-        private Dictionary<long, long> WaterToLightMap { get; set; } = new();
-        private Dictionary<long, long> LightToTempMap { get; set; } = new();
-        private Dictionary<long, long> TempToHumidMap { get; set; } = new();
-        private Dictionary<long, long> HumidToLocationMap { get; set; } = new();
+        private IEnumerable<long> Seeds;
+        private IEnumerable<long> DataMappingSets;
 
-        public Day5(IFileReader reader)
+        public Day5()
         {
-            Reader = reader;
-            PuzzleOneMeasurements = new List<string>();
+            PuzzleOneMeasurements = Enumerable.Empty<string>();
         }
 
         public void StartDay5()
@@ -40,19 +26,20 @@ namespace iAM.AdventOfCode._2023
         private void Puzzle1()
         {
             Console.WriteLine("******** Puzzle 1 ********");
-            PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath, '\n', true);
+            //Flaws.Day5.Start(Puzzle1FilePath);
+            PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath, '\n', true);
 
             FillSeeds(PuzzleOneMeasurements);
             FillAllMaps(PuzzleOneMeasurements);
 
-
-            //Console.WriteLine($"1. ======== Total Sum == {sum}");
+            // Answer: 621354867
+            Console.WriteLine($"1. ======== Min Value == {this.Seeds.Min()}");
         }
 
         private void FillSeeds(IEnumerable<string> measurements)
         {
-            var seedLine = Reader.ValueRemover(measurements.First(), "seeds:");
-            this.Seeds = Reader.ValueSplitter<string>(seedLine, ' ');
+            var seedLine = FileReader.ValueRemover(measurements.First(), "seeds:");
+            this.Seeds = FileReader.ValueSplitter<long>(seedLine, ' ');
         }
 
         private void FillAllMaps(IEnumerable<string> measurements)
@@ -76,99 +63,55 @@ namespace iAM.AdventOfCode._2023
                 }
             }
 
-            List<string> sts = new List<string>();
-            List<string> stf = new List<string>();
-            List<string> ftw = new List<string>();
-            List<string> wtl = new List<string>();
-            List<string> ltt = new List<string>();
-            List<string> tth = new List<string>();
-            List<string> htl = new List<string>();
-
             foreach (var group in result)
             {
-
-
-                switch (group.Key)
+                var mappedMap = new List<(long dest, long source, long range)>();
+                foreach (var line in group.Value)
                 {
-                    case "seed-to-soil map:":
-                        foreach (var line in group.Value)
-                        {
-                            sts.Add(line);
-                        }
-                        ConstructMaps(sts, this.SeedsToSoilMap);
-                        break;
-                    case "soil-to-fertilizer map:":
-                        foreach (var line in group.Value)
-                        {
-                            stf.Add(line);
-                        }
-                        break;
-                    case "fertilizer-to-water map:":
-                        foreach (var line in group.Value)
-                        {
-                            ftw.Add(line);
-                        }
-                        break;
-                    case "water-to-light map:":
-                        foreach (var line in group.Value)
-                        {
-                            wtl.Add(line);
-                        }
-                        break;
-                    case "light-to-temperature map:":
-                        foreach (var line in group.Value)
-                        {
-                            ltt.Add(line);
-                        }
-                        break;
-                    case "temperature-to-humidity map:":
-                        foreach (var line in group.Value)
-                        {
-                            tth.Add(line);
-                        }
-                        break;
-                    case "humidity-to-location map:":
-                        foreach (var line in group.Value)
-                        {
-                            htl.Add(line);
-                        }
-                        break;
+                    var map = ConstructMap(line);
+                    mappedMap.Add(map);
                 }
+
+                SearchFindAndMap(mappedMap);
             }
         }
 
-        private void ConstructMaps(IEnumerable<string> input, Dictionary<long, long> dict)
+        private (long dest, long source, long range) ConstructMap(string line)
         {
-            var values = input.ToList();
-            var lists = new List<List<long>>();
-            long maxValue = 0;
+            var realvalues = FileReader.ValueSplitter<long>(line, ' ').ToList();
 
-            foreach (var value in values)
+            return (realvalues[0], realvalues[1], realvalues[2]);
+        }
+
+        private void SearchFindAndMap(List<(long dest, long source, long range)> input)
+        {
+            var newSeeds = new List<long>();
+            foreach (var seed in this.Seeds.ToList())
             {
-                var realvalues = Reader.ValueSplitter<long>(value, ' ').ToList();
-                if (maxValue < realvalues.First())
+                var selectedMap = input.SingleOrDefault(map => seed.IsInRange(map));
+
+                if (selectedMap is (0,0,0))
                 {
-                    maxValue = realvalues.First();
+                    newSeeds.Add(seed);
+                    continue;
                 }
 
-                lists.Add(realvalues);
+                newSeeds.Add(seed.TransformMapper(selectedMap));
             }
+            Seeds = newSeeds;
+        }
+    }
 
-            foreach (var value in lists)
-            {
-                var source = value[1];
-                var destination = value[0];
-                var range = value[2];
+    public static class Day5Helpers
+    {
+        public static bool IsInRange(this long seed, (long dest, long source, long range) map)
+        {
+            return seed >= map.source && seed < map.source + map.range;
+        }
 
-                for(var i = 0; i != range; i++)
-                {
-                    dict.Add(source, destination);
-                    source++;
-                    destination++;
-                }
-            }
-
-            Console.WriteLine(dict);
+        public static long TransformMapper(this long seed, (long dest, long source, long range) map)
+        {
+            return seed + (map.dest - map.source);
         }
     }
 }
