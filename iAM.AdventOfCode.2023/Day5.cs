@@ -1,6 +1,8 @@
 ﻿using iAM.AdventOfCode._2023.Flaws;
 using iAM.AdventOfCode._2023.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Net;
 using System.Runtime.InteropServices;
 
@@ -9,11 +11,11 @@ namespace iAM.AdventOfCode._2023
     public class Day5
     {
         private IEnumerable<string> PuzzleOneMeasurements { get; set; }
-        private string Puzzle1FilePath = "Day5Puzzle1.txt";
-        //private string Puzzle1FilePath = "Day5_small.txt";
+        //private string Puzzle1FilePath = "Day5Puzzle1.txt";
+        private string Puzzle1FilePath = "Day5_small.txt";
 
         private IEnumerable<long> Seeds;
-        private IEnumerable<(long startSeed, long endSeed)> SeedPairs;
+        private IEnumerable<(long startSeed, long range)> SeedPairs;
         private IEnumerable<long> DataMappingSets;
         private bool UsesSeedPairs = false;
 
@@ -25,7 +27,7 @@ namespace iAM.AdventOfCode._2023
         public void StartDay5()
         {
             Console.WriteLine("******** Day 5 ********");
-            //Puzzle1();
+            Puzzle1();
             Puzzle2();
         }
 
@@ -52,7 +54,7 @@ namespace iAM.AdventOfCode._2023
             FillSeeds(PuzzleOneMeasurements);
             FillAllMaps(PuzzleOneMeasurements);
 
-            Console.WriteLine($"1. ======== Min Value == {this.Seeds.Min()}");
+            Console.WriteLine($"1. ======== Min Value == {this.SeedPairs.Min(s => s.startSeed)}");
         }
 
         private void FillSeeds(IEnumerable<string> measurements)
@@ -67,13 +69,21 @@ namespace iAM.AdventOfCode._2023
                            .GroupBy(x => x.index / 2)
                            .Select(seed => (
                                start: seed.First().value,
-                               range: seed.First().value + (seed.Skip(1).First().value -1)
+                               range: seed.Skip(1).First().value
                            ));
+
+                Console.WriteLine("Initial Seeds");
+                SeedPairs.ToList().ForEach(s => Console.Write($"({s.startSeed}, {s.range})"));
+                Console.WriteLine("\n");
 
                 return;
             }
 
             this.Seeds = seeds;
+
+            Console.WriteLine("Initial Seeds");
+            Seeds.ToList().ForEach(s => Console.Write(s + ", "));
+            Console.WriteLine("\n");
         }
 
         //private void FillSeedPairs(IEnumerable<string> measurements)
@@ -117,7 +127,7 @@ namespace iAM.AdventOfCode._2023
                 if (UsesSeedPairs)
                 {
                     SearchFindAndMapPairs(mappedMap);
-                    UsesSeedPairs = false;
+                    continue;
                 }
 
                 SearchFindAndMap(mappedMap);
@@ -133,34 +143,44 @@ namespace iAM.AdventOfCode._2023
 
         private void SearchFindAndMapPairs(List<(long dest, long source, long range)> input)
         {
-            var newSeedPairs = new List<(long start, long end)>();
-            var rangeSeedPairs = new List<(long start, long end)>();
-            var newSeeds = new List<long[]>(); 
+            var mappedPairs = new List<(long start, long range)>();
 
-            foreach (var seedPair in this.SeedPairs.ToArray())
+            foreach (var initPair in this.SeedPairs)
             {
-                var seed = seedPair.startSeed;
-                var selectedMaps = input.Where(map => seedPair.HasIntersection(map, out long overlapStart, out long overlapEnd)).ToList();
-
-                if (!selectedMaps.Any())
+                var seedPairsSplit = new List<(long start, long range)>();
+                foreach (var map in input)
                 {
-                    newSeedPairs.Add(seedPair);
+                    var hasInterSect = initPair.HasIntersection(map, out var oStart, out var oRange);
+                    (long s, long r) intersectedPair = new();
+
+                    if (hasInterSect)
+                    {
+                        seedPairsSplit.Add((initPair.startSeed, (oStart - initPair.startSeed)));
+                        intersectedPair = (oStart, oRange);
+                        seedPairsSplit.Add(((oStart + oRange), (initPair.startSeed + initPair.range-1) - (oStart + oRange-1)));
+
+                        seedPairsSplit.Add(intersectedPair.TransformMapper(map));
+                    }
+                }
+
+                seedPairsSplit.RemoveAll(s => s.range < 1);
+
+                if (!seedPairsSplit.Any())
+                {
+                    mappedPairs.Add(initPair);
                     continue;
                 }
 
-                foreach (var selectedMap in selectedMaps)
-                {
-                    seedPair.HasIntersection(selectedMap, out long overlapStart, out long overlapEnd);
-
-                    newSeedPairs.Add((seedPair.startSeed, overlapStart-1));
-                    var mapablePair = (overlapStart, overlapEnd);
-                    newSeedPairs.Add((overlapEnd + 1, seedPair.endSeed));
-
-                    var pairs = mapablePair.TransformMapper(selectedMap);
-                    //newSeedPairs.Append(x => );
-                }
+                mappedPairs.AddRange(seedPairsSplit.Distinct());
             }
+
+            this.SeedPairs = mappedPairs;
+
+            Console.WriteLine("Seeds");
+            SeedPairs.ToList().ForEach(s => Console.Write($"({s.startSeed}, {s.range})"));
+            Console.WriteLine("\n");
         }
+
         private void SearchFindAndMap(List<(long dest, long source, long range)> input)
         {
             var newSeeds = new List<long>();
@@ -179,6 +199,9 @@ namespace iAM.AdventOfCode._2023
             }
 
             Seeds = newSeeds;
+            Console.WriteLine("Seeds");
+            Seeds.ToList().ForEach(s => Console.Write(s + ", "));
+            Console.WriteLine("\n");
         }
     }
 
@@ -189,30 +212,33 @@ namespace iAM.AdventOfCode._2023
             return seed >= map.source && seed < map.source + map.range;
         }
 
-        public static bool HasIntersection(this (long seed, long range) pair, (long dest, long source, long range) map, out long overlapStart, out long overlapEnd)
+        public static bool HasIntersection(this (long seed, long range) pair, (long dest, long source, long range) map, out long overlapStart, out long overlapRange)
         {
-            overlapStart = Math.Max(pair.seed, map.source);
-            overlapEnd = Math.Min(pair.range, map.source + map.range);
+            overlapStart = 0;
+            overlapRange = 0;
 
-            return overlapStart <= overlapEnd;
+            var oStart = Math.Max(pair.seed, map.source);
+            var oEnd = Math.Min((pair.seed + pair.range) - 1, (map.source + map.range) - 1);
+
+            if (oEnd < oStart)
+            {
+                return false;
+            }
+
+            overlapStart = oStart;
+            overlapRange = (oEnd - oStart) + 1;
+            return true;
         }
 
         public static long TransformMapper(this long seed, (long dest, long source, long range) map)
         {
             return seed + (map.dest - map.source);
         }
-        
-        public static IEnumerable<(long, long)[]> TransformMapper(this (long startSeed, long endSeed) pairs, (long dest, long source, long range) map)
+
+        public static (long seed, long range) TransformMapper(this (long seed, long range) pairs, (long dest, long source, long range) map)
         {
-            var seed = pairs.startSeed;
-            var mappedSeeds = new List<(long, long)>();
-
-            for (int i = 0; seed <= pairs.endSeed; seed++)
-            {
-                mappedSeeds.Add((seed + (map.dest - map.source), 1));
-            }
-
-            return mappedSeeds.Chunk(10000);
+            var newSeed = pairs.seed + (map.dest - map.source);
+            return (newSeed, pairs.range);
         }
     }
 }
