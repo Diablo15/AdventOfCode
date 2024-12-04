@@ -1,11 +1,8 @@
-﻿AdventOfCode2021/AdventOfCode2021/bin/*
-AdventOfCode2021/AdventOfCode2021/obj/*
-*.suo
-AdventOfCode2021/.vs/AdventOfCode2021/config/*
+﻿*.suo
 *.suo
 *.cache
 *.v2
 *.idea
-bin/
-obj/
-/iAM.AdventOfCode.2021/obj
+*/bin
+*/obj
+/.vs
