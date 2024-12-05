@@ -51,7 +51,7 @@ namespace iAM.AdventOfCode._2023
 
         private void FillSeeds(IEnumerable<string> measurements)
         {
-            var seedLine = FileReader.ValueRemover(measurements.First(), "seeds:");
+            var seedLine = FileReader.ValueStartRemover(measurements.First(), "seeds:");
             var seeds = FileReader.ValueSplitter<long>(seedLine, ' ');
 
             if (UsesSeedPairs)

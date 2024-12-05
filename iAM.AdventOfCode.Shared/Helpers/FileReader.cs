@@ -88,9 +88,14 @@ public static class FileReader
         return result;
     }
 
-    static public string ValueRemover(string line, string toRemove)
+    static public string ValueStartRemover(string line, string toRemove)
     {
-        var newValue = line.Split(toRemove)[1];
+        return line.Split(toRemove, StringSplitOptions.TrimEntries)[1];
+    }
+
+    static public string WhiteSpaceRemover(this string line)
+    {
+        var newValue = line.Replace(" ", "");
         return newValue.Trim();
     }
 }

@@ -9,9 +9,9 @@ namespace iAM.AdventOfCode._2023
 {
     public class Day6 : AoCDay
     {
-        public List<(int gameNr, int gameTimeMs, int recordDistMs)> PuzzleMeasurements { get; set; }
+        public List<(int gameNr, long gameTimeMs, long recordDistMs)> PuzzleMeasurements { get; set; }
 
-        public Day6() : base(6, true, false)
+        public Day6() : base(6, false, true)
         {
             this.PuzzleAltFilePath = @"Examples\Day6_small.txt";
             this.PuzzleMeasurements = new();
@@ -28,14 +28,18 @@ namespace iAM.AdventOfCode._2023
 
         public override void Puzzle2Content()
         {
-            throw new NotImplementedException();
+            ReadRaceValue();
+            var result = CalculateGamePossibilities();
+
+            // Answer: 34788142
+            Console.WriteLine($"========= Total posibilities : {result} =========");
         }
 
         private void ReadRaceValues()
         {
             var lines = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, '\n', true).ToArray();
-            var timeLine = FileReader.ValueRemover(lines[0], "Time:");
-            var distanceLine = FileReader.ValueRemover(lines[1], "Distance:");
+            var timeLine = FileReader.ValueStartRemover(lines[0], "Time:");
+            var distanceLine = FileReader.ValueStartRemover(lines[1], "Distance:");
 
             var timeValues = FileReader.ValueSplitter<int>(timeLine, ' ').ToArray();
             var distanceValues = FileReader.ValueSplitter<int>(distanceLine, ' ').ToArray();
@@ -46,14 +50,29 @@ namespace iAM.AdventOfCode._2023
             }
         }
 
-        private int CalculateGamePossibilities()
+        private void ReadRaceValue()
+        {
+            var lines = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, '\n', true).ToArray();
+            var timeLine = FileReader.ValueStartRemover(lines[0], "Time:");
+            var distanceLine = FileReader.ValueStartRemover(lines[1], "Distance:");
+
+            var timeVal = timeLine.WhiteSpaceRemover();
+            var distanceVal = distanceLine.WhiteSpaceRemover();
+
+            var timeValues = FileReader.ValueSplitter<long>(timeVal, ' ').Single();
+            var distanceValues = FileReader.ValueSplitter<long>(distanceVal, ' ').Single();
+
+            PuzzleMeasurements.Add((1, timeValues, distanceValues));
+        }
+
+        private long CalculateGamePossibilities()
         {
             var numberOfPossibilties = new List<int>();
             foreach (var race in this.PuzzleMeasurements)
             {
-                var possibilites = new List<int>();
+                var possibilites = new List<long>();
 
-                for (int holdPress = 0; holdPress <= race.gameTimeMs; holdPress++)
+                for (long holdPress = 0; holdPress <= race.gameTimeMs; holdPress++)
                 {
                     var milliMetersPerSec = holdPress;
                     var timeLeft = (race.gameTimeMs - holdPress);
@@ -67,7 +86,7 @@ namespace iAM.AdventOfCode._2023
                 numberOfPossibilties.Add(possibilites.Count);
             }
 
-            int? prdct = null;
+            long? prdct = null;
             foreach (var pos in numberOfPossibilties)
             {
                 prdct = prdct.HasValue ? prdct.Value * pos : pos;
