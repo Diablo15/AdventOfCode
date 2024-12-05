@@ -13,8 +13,15 @@
         public void StartDay()
         {
             Console.WriteLine($"******** Day {DayNumber} ********");
-            Puzzle1();
-            Puzzle2();
+            if (runPuzzle1)
+            {
+                Puzzle1();
+            }
+
+            if (runPuzzle2)
+            {
+                Puzzle2();
+            }
         }
 
         private void Puzzle1()

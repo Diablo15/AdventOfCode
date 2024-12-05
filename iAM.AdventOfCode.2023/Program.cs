@@ -8,7 +8,8 @@ try
     //new Day2().StartDay2();
     //new Day3().StartDay3();
     //new Day4().StartDay4();
-    new Day5().StartDay();
+    //new Day5().StartDay();
+    new Day6().StartDay();
 
     Console.Read();
 }

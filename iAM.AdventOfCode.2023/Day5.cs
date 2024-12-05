@@ -11,7 +11,7 @@ namespace iAM.AdventOfCode._2023
     public class Day5 : AoCDay
     {
         private IEnumerable<string> PuzzleOneMeasurements { get; set; }
-        //private string Puzzle1FilePath = "Day5_small.txt";
+        //private string Puzzle1FilePath = "Examples\\Day5_small.txt";
 
         private IEnumerable<long> Seeds;
         private IEnumerable<(long startSeed, long range)> SeedPairs;
