@@ -1,5 +1,5 @@
+using iAM.AdventOfCode.Helpers;
 using System.Text.RegularExpressions;
-using iAM.AdventOfCode._2023.Helpers;
 
 namespace iAM.AdventOfCode._2023;
 
@@ -7,13 +7,11 @@ public class Day1
 {
     private IEnumerable<string> PuzzleOneMeasurements { get; set; }
 
-    private IFileReader Reader { get; set; }
 
     private string Puzzle1FilePath { get; set; } = "Day1Puzzle1.txt";
 
-    public Day1(IFileReader reader)
+    public Day1()
     {
-        Reader = reader;
         PuzzleOneMeasurements = new List<string>();
     }
 
@@ -27,7 +25,7 @@ public class Day1
     private void Puzzle1()
     {
         Console.WriteLine("******** Puzzle 1 ********");
-        PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath);
+        PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath);
 
         var result = FindFirstLastDigit(PuzzleOneMeasurements.ToList());
         var sum = result.Sum(x => x);
@@ -37,7 +35,7 @@ public class Day1
     private void Puzzle2()
     {
         Console.WriteLine("******** Puzzle 2 ********");
-        PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath);
+        PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath);
 
         var correctedValues = ReplaceWrittenValues(PuzzleOneMeasurements.ToList());
         var result = FindFirstLastDigit(correctedValues.ToList());

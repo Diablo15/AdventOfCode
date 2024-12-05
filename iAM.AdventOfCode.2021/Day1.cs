@@ -1,16 +1,15 @@
+using iAM.AdventOfCode.Helpers;
+
 namespace iAM.AdventOfCode._2021;
 
 public class Day1
 {
     private IEnumerable<int> PuzzleOneMeasurements { get; set; }
     
-    private IFileReader Reader { get; set; }
-    
     private string Puzzle1FilePath { get; set; } = "Day1Puzzle1.csv";
 
-    public Day1(IFileReader reader)
+    public Day1()
     {
-        this.Reader = reader;
         this.PuzzleOneMeasurements = new List<int>();
     }
     
@@ -25,7 +24,7 @@ public class Day1
     {
         Console.WriteLine("******** Puzzle 1 ********");
         
-        this.PuzzleOneMeasurements = this.Reader.ReadInputValues<int>(this.Puzzle1FilePath, ';');
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<int>(this.Puzzle1FilePath, ';');
         
         var total = this.CheckIncreasedMeasurements(this.PuzzleOneMeasurements.ToList());
         

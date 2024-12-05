@@ -1,5 +1,5 @@
 ﻿using iAM.AdventOfCode._2023.Flaws;
-using iAM.AdventOfCode._2023.Helpers;
+using iAM.AdventOfCode.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
@@ -8,10 +8,9 @@ using System.Runtime.InteropServices;
 
 namespace iAM.AdventOfCode._2023
 {
-    public class Day5
+    public class Day5 : AoCDay
     {
         private IEnumerable<string> PuzzleOneMeasurements { get; set; }
-        private string Puzzle1FilePath = "Day5Puzzle1.txt";
         //private string Puzzle1FilePath = "Day5_small.txt";
 
         private IEnumerable<long> Seeds;
@@ -19,21 +18,13 @@ namespace iAM.AdventOfCode._2023
         private IEnumerable<long> DataMappingSets;
         private bool UsesSeedPairs = false;
 
-        public Day5()
+        public Day5() : base(5, false)
         {
             PuzzleOneMeasurements = Enumerable.Empty<string>();
         }
 
-        public void StartDay5()
+        public override void Puzzle1Content()
         {
-            Console.WriteLine("******** Day 5 ********");
-            Puzzle1();
-            Puzzle2();
-        }
-
-        private void Puzzle1()
-        {
-            Console.WriteLine("******** Puzzle 1 ********");
             PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath, '\n', true);
 
             FillSeeds(PuzzleOneMeasurements);
@@ -43,7 +34,7 @@ namespace iAM.AdventOfCode._2023
             Console.WriteLine($"1. ======== Min Value == {this.Seeds.Min()}");
         }
 
-        private void Puzzle2()
+        public override void Puzzle2Content()
         {
             Console.WriteLine("******** Puzzle 2 ********");
 
@@ -54,6 +45,7 @@ namespace iAM.AdventOfCode._2023
             FillSeeds(PuzzleOneMeasurements);
             FillAllMaps(PuzzleOneMeasurements);
 
+            // Answer: 15880236
             Console.WriteLine($"1. ======== Min Value == {this.SeedPairs.Min(s => s.startSeed)}");
         }
 
@@ -85,14 +77,6 @@ namespace iAM.AdventOfCode._2023
             Seeds.ToList().ForEach(s => Console.Write(s + ", "));
             Console.WriteLine("\n");
         }
-
-        //private void FillSeedPairs(IEnumerable<string> measurements)
-        //{
-        //    var seedLine = FileReader.ValueRemover(measurements.First(), "seeds:");
-        //    var seeds = FileReader.ValueSplitter<long>(seedLine, ' ').ToList();
-
-
-        //}
 
         private void FillAllMaps(IEnumerable<string> measurements)
         {

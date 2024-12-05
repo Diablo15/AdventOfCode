@@ -23,4 +23,8 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\iAM.AdventOfCode.Shared\iAM.AdventOfCode.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

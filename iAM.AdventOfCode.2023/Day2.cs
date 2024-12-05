@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
-using iAM.AdventOfCode._2023.Helpers;
 using iAM.AdventOfCode._2023.Models;
+using iAM.AdventOfCode.Helpers;
 
 namespace iAM.AdventOfCode._2023;
 
@@ -10,15 +10,12 @@ public class Day2
 
     private List<Game> GameData { get; set; }
 
-    private IFileReader Reader { get; set; }
-
     private Set MatchingSet = new() { Blue = 14, Red = 12, Green = 13 };
     
     private string Puzzle1FilePath = "Day2Puzzle1.txt";
 
-    public Day2(IFileReader reader)
+    public Day2()
     {
-        Reader = reader;
         PuzzleOneMeasurements = new List<string>();
     }
 
@@ -32,7 +29,7 @@ public class Day2
     private void Puzzle1()
     {
         Console.WriteLine("******** Puzzle 1 ********");
-        PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath, '\n');
+        PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath, '\n');
         GameData = CreateGameData(this.PuzzleOneMeasurements.ToList()).ToList();
         var result = CheckPossibleGames(GameData);
         var sum = result.Sum(x => x);
@@ -128,7 +125,7 @@ public class Day2
         const string delimiter = ":";
         var indexDelimiter = input.IndexOf(delimiter, StringComparison.Ordinal);
         var data = input[(indexDelimiter+delimiter.Length)..].Trim();
-        var sets = Reader.ValueSplitter<string>(data, ';').ToList();
+        var sets = FileReader.ValueSplitter<string>(data, ';').ToList();
 
         return ExtractSetData(sets);
     }
@@ -139,7 +136,7 @@ public class Day2
         foreach (var line in input)
         {
             var set = new Set();
-            var data = Reader.ValueSplitter<string>(line, ',').ToList();
+            var data = FileReader.ValueSplitter<string>(line, ',').ToList();
 
             foreach (var color in data)
             {

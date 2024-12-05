@@ -4,10 +4,9 @@ using iAM.AdventOfCode._2021;
 
 try
 {
-    var reader = new FileReader();
-    //new Day1(reader).StartDay1();
-    //new Day2(reader).StartDay2();
-    new Day3(reader).StartDay3();
+    //new Day1().StartDay1();
+    //new Day2().StartDay2();
+    new Day3().StartDay3();
 }
 catch (Exception ex)
 {

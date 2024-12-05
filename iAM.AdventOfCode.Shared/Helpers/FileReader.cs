@@ -1,6 +1,6 @@
-namespace iAM.AdventOfCode._2023.Helpers;
+namespace iAM.AdventOfCode.Helpers;
 
-public class FileReader
+public static class FileReader
 {
     static public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ', bool ignoreWhitLine = false)
     {

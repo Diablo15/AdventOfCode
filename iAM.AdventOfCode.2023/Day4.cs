@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Data.Common;
 using System.Text.RegularExpressions;
-using iAM.AdventOfCode._2023.Helpers;
 using iAM.AdventOfCode._2023.Models;
+using iAM.AdventOfCode.Helpers;
 
 namespace iAM.AdventOfCode._2023;
 
@@ -10,15 +10,12 @@ public class Day4
 {
     private IEnumerable<string> PuzzleOneMeasurements { get; set; }
 
-    private IFileReader Reader { get; set; }
-
     private IEnumerable<ScratchCard> CalculatedCards { get; set; }
 
     private string Puzzle1FilePath = "Day4Puzzle1.txt";
 
-    public Day4(IFileReader reader)
+    public Day4()
     {
-        Reader = reader;
         PuzzleOneMeasurements = new List<string>();
     }
 
@@ -32,7 +29,7 @@ public class Day4
     private void Puzzle1()
     {
         Console.WriteLine("******** Puzzle 1 ********");
-        PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath, '\n');
+        PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath, '\n');
 
         var cards = GenerateScratchCards();
         CalculatedCards = GetWinningMatches(cards);
@@ -110,11 +107,11 @@ private List<ScratchCard> GenerateScratchCards()
             const string delimiter = ":";
             var indexDelimiter = line.IndexOf(delimiter, StringComparison.Ordinal);
             var data = line[(indexDelimiter+delimiter.Length)..].Trim();
-            var numberGroup = Reader.ValueSplitter<string>(data, '|').ToList();
+            var numberGroup = FileReader.ValueSplitter<string>(data, '|').ToList();
             
             for(var group = 0; group < numberGroup.Count; group++)
             {
-                var numbers = Reader.ValueSplitter<int>(numberGroup[group], ' ').ToList();
+                var numbers = FileReader.ValueSplitter<int>(numberGroup[group], ' ').ToList();
                 
                 if (group == 0)
                 {

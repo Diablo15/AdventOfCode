@@ -1,5 +1,5 @@
+using iAM.AdventOfCode.Helpers;
 using System.Text.RegularExpressions;
-using iAM.AdventOfCode._2023.Helpers;
 
 namespace iAM.AdventOfCode._2023.Flaws;
 
@@ -7,15 +7,12 @@ public class Day3
 {
     private IEnumerable<string> PuzzleOneMeasurements { get; set; }
 
-    private IFileReader Reader { get; set; }
-
     private string Puzzle1FilePath = "Day3Puzzle1.txt";
 
     private Regex DigitRegex = new(@"(\d)+");
 
-    public Day3(IFileReader reader)
+    public Day3()
     {
-        Reader = reader;
         PuzzleOneMeasurements = new List<string>();
     }
 
@@ -28,7 +25,7 @@ public class Day3
     private void Puzzle1()
     {
         Console.WriteLine("******** Puzzle 1 ********");
-        PuzzleOneMeasurements = Reader.ReadInputValues<string>(Puzzle1FilePath, '\n');
+        PuzzleOneMeasurements = FileReader.ReadInputValues<string>(Puzzle1FilePath, '\n');
 
         var results = GetAllPartNumbers();
         var sum = results.Sum(x => x);

@@ -1,5 +1,6 @@
 using System.Text;
 using iAM.AdventOfCode._2021.Models;
+using iAM.AdventOfCode.Helpers;
 
 namespace iAM.AdventOfCode._2021;
 
@@ -13,11 +14,8 @@ public class Day3
     
     public IEnumerable<string> CarbonDioxideRatings { get; set; }
     
-    private IFileReader Reader { get; set; }
-    
-    public Day3(IFileReader reader)
+    public Day3()
     {
-        this.Reader = reader;
     }
     
     public void StartDay3()
@@ -31,7 +29,7 @@ public class Day3
     {
         Console.WriteLine("******** Puzzle 1 ********");
         
-        this.PuzzleOneDiagnostics = this.Reader.ReadInputValues<string>(this.Puzzle1FilePath, ';');
+        this.PuzzleOneDiagnostics = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, ';');
         var gammaRates = this.ReadPositions(this.PuzzleOneDiagnostics.ToList());
         var list = (this.ConstructBinaryFromBits(gammaRates.ToList())).ToList();
         

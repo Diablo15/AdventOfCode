@@ -1,3 +1,5 @@
+using iAM.AdventOfCode.Helpers;
+
 namespace iAM.AdventOfCode._2021;
 
 public class Day2
@@ -6,11 +8,8 @@ public class Day2
     
     private IEnumerable<Tuple<string, int>> PuzzleOneMeasurements { get; set; }
     
-    private IFileReader Reader { get; set; }
-    
-    public Day2(IFileReader reader)
+    public Day2()
     {
-        this.Reader = reader;
         this.PuzzleOneMeasurements = new List<Tuple<string, int>>();
     }
     
@@ -25,7 +24,7 @@ public class Day2
     {
         Console.WriteLine("******** Puzzle 1 ********");
         
-        this.PuzzleOneMeasurements = this.Reader.ReadInputValues<string, int>(this.Puzzle1FilePath);
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string, int>(this.Puzzle1FilePath);
         var directions = this.GetDirectionValues(this.PuzzleOneMeasurements.ToList());
         
         Console.WriteLine($"=========================== Total depth: {directions["depth"]}");
@@ -37,7 +36,7 @@ public class Day2
     {
         Console.WriteLine("******** Puzzle 2 ********");
         
-        this.PuzzleOneMeasurements = this.Reader.ReadInputValues<string, int>(this.Puzzle1FilePath);
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string, int>(this.Puzzle1FilePath);
         var directions = this.GetAimedDirectionValues(this.PuzzleOneMeasurements.ToList());
         
         Console.WriteLine($"=========================== Total depth: {directions["depth"]}");
