@@ -63,6 +63,28 @@ public static class FileReader
 
         return result;
     }
+    
+    static public IEnumerable<T> ValueSplitter<T>(string line)
+    {
+        var result = new List<T>();
+
+        if (!string.IsNullOrEmpty(line))
+        {
+            foreach (var character in line)
+                try
+                {
+                    var value = (T)Convert.ChangeType(character, typeof(T));
+                    result.Add(value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error converting value '{character}' to type {typeof(T).Name}: {ex.Message}");
+                    // Handle conversion error as needed
+                }
+        }
+
+        return result;
+    }
 
     static public IEnumerable<Tuple<T1, T2>> ValueSplitter<T1, T2>(string line, char delimiter)
     {
