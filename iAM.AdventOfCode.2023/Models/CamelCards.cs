@@ -8,20 +8,21 @@ namespace iAM.AdventOfCode._2023.Models
 {
     public enum CamelCards
     {
-        None,
-        Card1,
-        Card2,
-        Card3,
-        Card4,
-        Card5,
-        Card6,
-        Card7,
-        Card8,
-        Card9,
-        CardT,
-        CardJ,
-        CardQ,
-        CardK,
-        CardA
+        CardJoker = 1,
+        Card1 = 10,
+        Card2 = 20,
+        Card3 = 30,
+        Card4 = 40,
+        Card5 = 50,
+        Card6 = 60,
+        Card7 = 70,
+        Card8 = 80,
+        Card9 = 90,
+        CardT = 100,
+        CardJ = 110,
+        CardQ = 120,
+        CardK = 130,
+        CardA = 140,
+        None = 0,
     }
 }

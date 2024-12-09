@@ -3,6 +3,7 @@ using iAM.AdventOfCode.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,20 +14,30 @@ namespace iAM.AdventOfCode._2023
         public List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> PuzzleMeasurements { get; set; }
         public int Multiplier { get; set; }
 
-        public Day7() : base(7, true, false)
+        public Day7() : base(7)
         {
             this.PuzzleAltFilePath = @"Examples\Day7_small.txt";
             this.PuzzleMeasurements = new();
+            ReadHandAndBids();
         }
 
         public override void Puzzle1Content()
         {
-            ReadHandAndBids();
             this.PuzzleMeasurements = TranslateHand();
             var completeList = DetermineMultiplier();
             var calcResult = CalculateWinnings(completeList);
 
             // Answer: 249726565
+            Console.WriteLine($"========= Total winning: {calcResult} =========");
+        }
+
+        public override void Puzzle2Content()
+        {
+            this.PuzzleMeasurements = TranslateHand(true);
+            var completeList = DetermineMultiplier();
+            var calcResult = CalculateWinnings(completeList);
+
+            // Answer: 251135960
             Console.WriteLine($"========= Total winning: {calcResult} =========");
         }
 
@@ -51,7 +62,7 @@ namespace iAM.AdventOfCode._2023
             }
         }
 
-        private List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> TranslateHand()
+        private List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> TranslateHand(bool useJokers = false)
         {
             var result = new List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)>();
 
@@ -60,53 +71,7 @@ namespace iAM.AdventOfCode._2023
                 var cCards = new List<CamelCards>();
                 var cHand = default(CamelHands);
 
-                var cards = FileReader.ValueSplitter<char>(hands.hand);
-
-                foreach (var card in cards)
-                {
-                    switch (card)
-                    {
-                        case '2':
-                            cCards.Add(CamelCards.Card2);
-                            break;
-                        case '3':
-                            cCards.Add(CamelCards.Card3);
-                            break;
-                        case '4':
-                            cCards.Add(CamelCards.Card4);
-                            break;
-                        case '5':
-                            cCards.Add(CamelCards.Card5);
-                            break;
-                        case '6':
-                            cCards.Add(CamelCards.Card6);
-                            break;
-                        case '7':
-                            cCards.Add(CamelCards.Card7);
-                            break;
-                        case '8':
-                            cCards.Add(CamelCards.Card8);
-                            break;
-                        case '9':
-                            cCards.Add(CamelCards.Card9);
-                            break;
-                        case 'T':
-                            cCards.Add(CamelCards.CardT);
-                            break;
-                        case 'J':
-                            cCards.Add(CamelCards.CardJ);
-                            break;
-                        case 'Q':
-                            cCards.Add(CamelCards.CardQ);
-                            break;
-                        case 'K':
-                            cCards.Add(CamelCards.CardK);
-                            break;
-                        case 'A':
-                            cCards.Add(CamelCards.CardA);
-                            break;
-                    }
-                }
+                cCards = CardMapper(hands.hand, useJokers).ToList();
 
                 var grouped = cCards.GroupBy(c => c)
                     .ToDictionary(x => x.Key, y => y.Count());
@@ -119,11 +84,25 @@ namespace iAM.AdventOfCode._2023
                 {
                     if (grouped.ContainsValue(4))
                     {
-                        cHand = CamelHands.FourOfAKind;
+                        if (grouped.ContainsKey(CamelCards.CardJoker))
+                        {
+                            cHand = CamelHands.FiveOfAKind;
+                        }
+                        else
+                        {
+                            cHand = CamelHands.FourOfAKind;
+                        }
                     }
                     else if (grouped.ContainsValue(3) && grouped.ContainsValue(2))
                     {
-                        cHand = CamelHands.FullHouse;
+                        if (grouped.ContainsKey(CamelCards.CardJoker))
+                        {
+                            cHand = CamelHands.FiveOfAKind;
+                        }
+                        else
+                        {
+                            cHand = CamelHands.FullHouse;
+                        }
                     }
                     else
                     {
@@ -134,11 +113,32 @@ namespace iAM.AdventOfCode._2023
                 {
                     if (grouped.ContainsValue(3))
                     {
-                        cHand = CamelHands.ThreeOfAKind;
+                        if (grouped.ContainsKey(CamelCards.CardJoker))
+                        {
+                            cHand = CamelHands.FourOfAKind;
+                        }
+                        else
+                        {
+                            cHand = CamelHands.ThreeOfAKind;
+                        }
                     }
                     else if (grouped.ContainsValue(2))
                     {
-                        cHand = CamelHands.TwoPair;
+                        if (grouped.ContainsKey(CamelCards.CardJoker))
+                        {
+                            if (grouped.Where(c => c.Key == CamelCards.CardJoker).Single().Value == 2)
+                            {
+                                cHand = CamelHands.FourOfAKind;
+                            }
+                            else
+                            {
+                                cHand = CamelHands.FullHouse;
+                            }
+                        }
+                        else
+                        {
+                            cHand = CamelHands.TwoPair;
+                        }
                     }
                     else
                     {
@@ -149,11 +149,25 @@ namespace iAM.AdventOfCode._2023
                 {
                     if (grouped.ContainsValue(2))
                     {
-                        cHand = CamelHands.OnePair;
+                        if (grouped.ContainsKey(CamelCards.CardJoker))
+                        {
+                            cHand = CamelHands.ThreeOfAKind;
+                        }
+                        else
+                        {
+                            cHand = CamelHands.OnePair;
+                        }
                     }
                     else
                     {
-                        cHand = CamelHands.HighCard;
+                        if (grouped.ContainsKey(CamelCards.CardJoker))
+                        {
+                            cHand = CamelHands.OnePair;
+                        }
+                        else
+                        {
+                            cHand = CamelHands.HighCard;
+                        }
                     }
                 }
 
@@ -189,7 +203,65 @@ namespace iAM.AdventOfCode._2023
             return result;
         }
 
-        public IEnumerable<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> DetermineCardOrder(List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> input, int cardSelector)
+        private IEnumerable<CamelCards> CardMapper(string cards, bool useJokers)
+        {
+            var cardsCharacters = FileReader.ValueSplitter<char>(cards);
+
+            foreach (var card in cardsCharacters)
+            {
+                switch (card)
+                {
+                    case '2':
+                        yield return CamelCards.Card2;
+                        break;
+                    case '3':
+                        yield return CamelCards.Card3;
+                        break;
+                    case '4':
+                        yield return CamelCards.Card4;
+                        break;
+                    case '5':
+                        yield return CamelCards.Card5;
+                        break;
+                    case '6':
+                        yield return CamelCards.Card6;
+                        break;
+                    case '7':
+                        yield return CamelCards.Card7;
+                        break;
+                    case '8':
+                        yield return CamelCards.Card8;
+                        break;
+                    case '9':
+                        yield return CamelCards.Card9;
+                        break;
+                    case 'T':
+                        yield return CamelCards.CardT;
+                        break;
+                    case 'J':
+                        if (useJokers)
+                        {
+                            yield return CamelCards.CardJoker;
+                        }
+                        else
+                        {
+                            yield return CamelCards.CardJ;
+                        }
+                        break;
+                    case 'Q':
+                        yield return CamelCards.CardQ;
+                        break;
+                    case 'K':
+                        yield return CamelCards.CardK;
+                        break;
+                    case 'A':
+                        yield return CamelCards.CardA;
+                        break;
+                }
+            }
+        }
+
+        private IEnumerable<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> DetermineCardOrder(List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)> input, int cardSelector)
         {
             var result = new List<(string hand, List<CamelCards> cCards, CamelHands cHand, int bid, int rankMultiplier)>();
 
@@ -215,9 +287,6 @@ namespace iAM.AdventOfCode._2023
             return result;
         }
 
-        public override void Puzzle2Content()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
