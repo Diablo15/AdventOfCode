@@ -16,6 +16,7 @@
       <None Remove="Files\Day6Puzzle1.txt" />
       <None Remove="Files\Day7Puzzle1.txt" />
       <None Remove="Files\Day8Puzzle1.txt" />
+      <None Remove="Files\Day9Puzzle1.txt" />
       <None Remove="Files\Examples\Day6_small.txt" />
       <None Remove="Files\Examples\Day7_small.txt" />
       <None Remove="Files\Examples\Day8_small.txt" />
@@ -43,6 +44,9 @@
       <Content Include="Files\Day8Puzzle1.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Include="Files\Day9Puzzle1.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
       <Content Include="Files\Examples\Day5_small.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
@@ -62,6 +66,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\iAM.AdventOfCode.Shared\iAM.AdventOfCode.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Assignments\Day9.md">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
