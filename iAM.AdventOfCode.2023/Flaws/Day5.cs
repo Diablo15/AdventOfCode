@@ -17,7 +17,7 @@ namespace iAM.AdventOfCode._2023.Flaws
 
             // Seeds: 79 14 55 13
             //var seeds = data[0].Split(": ")[1].Split(" ").Select(long.Parse).ToList();
-            var seeds = FileReader.ValueSplitter<long>(data[0].Split(": ")[1], ' ').ToList();
+            var seeds = FileReader.ValuesSplitter<long>(data[0].Split(": ")[1], ' ').ToList();
 
             // Parse all the data sets (mappings)
             var dataMappingSets = data[1..].Select(DataMappingSet.Parse).ToList();
@@ -50,7 +50,7 @@ namespace iAM.AdventOfCode._2023.Flaws
         public static DataMappingSet Parse(string data)
         {
             //var split = data.Split("\n");
-            var split = FileReader.ValueSplitter<string>(data, '\n').ToArray();
+            var split = FileReader.ValuesSplitter<string>(data, '\n').ToArray();
             return new DataMappingSet(split[0], split[1..].Select(DataMapping.Parse).ToList());
         }
 

@@ -107,11 +107,11 @@ private List<ScratchCard> GenerateScratchCards()
             const string delimiter = ":";
             var indexDelimiter = line.IndexOf(delimiter, StringComparison.Ordinal);
             var data = line[(indexDelimiter+delimiter.Length)..].Trim();
-            var numberGroup = FileReader.ValueSplitter<string>(data, '|').ToList();
+            var numberGroup = FileReader.ValuesSplitter<string>(data, '|').ToList();
             
             for(var group = 0; group < numberGroup.Count; group++)
             {
-                var numbers = FileReader.ValueSplitter<int>(numberGroup[group], ' ').ToList();
+                var numbers = FileReader.ValuesSplitter<int>(numberGroup[group], ' ').ToList();
                 
                 if (group == 0)
                 {

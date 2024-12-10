@@ -125,7 +125,7 @@ public class Day2
         const string delimiter = ":";
         var indexDelimiter = input.IndexOf(delimiter, StringComparison.Ordinal);
         var data = input[(indexDelimiter+delimiter.Length)..].Trim();
-        var sets = FileReader.ValueSplitter<string>(data, ';').ToList();
+        var sets = FileReader.ValuesSplitter<string>(data, ';').ToList();
 
         return ExtractSetData(sets);
     }
@@ -136,7 +136,7 @@ public class Day2
         foreach (var line in input)
         {
             var set = new Set();
-            var data = FileReader.ValueSplitter<string>(line, ',').ToList();
+            var data = FileReader.ValuesSplitter<string>(line, ',').ToList();
 
             foreach (var color in data)
             {

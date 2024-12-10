@@ -205,7 +205,7 @@ namespace iAM.AdventOfCode._2023
 
         private IEnumerable<CamelCards> CardMapper(string cards, bool useJokers)
         {
-            var cardsCharacters = FileReader.ValueSplitter<char>(cards);
+            var cardsCharacters = FileReader.ValuesSplitter<char>(cards);
 
             foreach (var card in cardsCharacters)
             {

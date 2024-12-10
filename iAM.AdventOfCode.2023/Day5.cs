@@ -52,7 +52,7 @@ namespace iAM.AdventOfCode._2023
         private void FillSeeds(IEnumerable<string> measurements)
         {
             var seedLine = FileReader.ValueStartRemover(measurements.First(), "seeds:");
-            var seeds = FileReader.ValueSplitter<long>(seedLine, ' ');
+            var seeds = FileReader.ValuesSplitter<long>(seedLine, ' ');
 
             if (UsesSeedPairs)
             {
@@ -122,7 +122,7 @@ namespace iAM.AdventOfCode._2023
 
         private (string type, long dest, long source, long range) ConstructMap(string line)
         {
-            var realvalues = FileReader.ValueSplitter<long>(line, ' ').ToList();
+            var realvalues = FileReader.ValuesSplitter<long>(line, ' ').ToList();
 
             if (UsesSeedPairs)
             {

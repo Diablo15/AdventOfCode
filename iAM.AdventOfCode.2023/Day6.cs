@@ -41,8 +41,8 @@ namespace iAM.AdventOfCode._2023
             var timeLine = FileReader.ValueStartRemover(lines[0], "Time:");
             var distanceLine = FileReader.ValueStartRemover(lines[1], "Distance:");
 
-            var timeValues = FileReader.ValueSplitter<int>(timeLine, ' ').ToArray();
-            var distanceValues = FileReader.ValueSplitter<int>(distanceLine, ' ').ToArray();
+            var timeValues = FileReader.ValuesSplitter<int>(timeLine, ' ').ToArray();
+            var distanceValues = FileReader.ValuesSplitter<int>(distanceLine, ' ').ToArray();
 
             for (int i = 0; i < timeValues.Length; i++)
             {
@@ -59,8 +59,8 @@ namespace iAM.AdventOfCode._2023
             var timeVal = timeLine.WhiteSpaceRemover();
             var distanceVal = distanceLine.WhiteSpaceRemover();
 
-            var timeValues = FileReader.ValueSplitter<long>(timeVal, ' ').Single();
-            var distanceValues = FileReader.ValueSplitter<long>(distanceVal, ' ').Single();
+            var timeValues = FileReader.ValuesSplitter<long>(timeVal, ' ').Single();
+            var distanceValues = FileReader.ValuesSplitter<long>(distanceVal, ' ').Single();
 
             PuzzleMeasurements.Add((1, timeValues, distanceValues));
         }
