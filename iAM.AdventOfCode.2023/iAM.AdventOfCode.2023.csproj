@@ -20,6 +20,7 @@
       <None Remove="Files\Examples\Day6_small.txt" />
       <None Remove="Files\Examples\Day7_small.txt" />
       <None Remove="Files\Examples\Day8_small.txt" />
+      <None Remove="Files\Examples\Day9_small.txt" />
       <Content Include="Files\Day1Puzzle1.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
@@ -54,6 +55,9 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <Content Include="Files\Examples\Day6_small.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Files\Examples\Day9_small.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <Content Include="Files\Examples\Day8_small.txt">
