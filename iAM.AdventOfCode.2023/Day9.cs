@@ -10,7 +10,7 @@ namespace iAM.AdventOfCode._2023
     public class Day9 : AoCDay
     {
         public List<(List<long> initialVals, List<List<long>> valueDiffs, List<long> newVals)> PuzzleMeasurements { get; set; }
-        public Day9() : base(9, true, false)
+        public Day9() : base(9, false, true)
         {
             PuzzleAltFilePath = @"Examples\Day9_small.txt";
         }
@@ -24,12 +24,19 @@ namespace iAM.AdventOfCode._2023
             var totalSum = this.PuzzleMeasurements.Select(x => x.newVals).Sum(v => v.Last());
 
             // Answer: 1666172641
-            Console.WriteLine($"========= Total steps: {totalSum} =========");
+            Console.WriteLine($"========= Total sum of extrapolated values: {totalSum} =========");
         }
 
         public override void Puzzle2Content()
         {
-            throw new NotImplementedException();
+            ReadPuzzleInput();
+            CalculateDiffsUntilZero();
+            CalculateNewValuesInLineBackwards();
+
+            var totalSum = this.PuzzleMeasurements.Select(x => x.newVals).Sum(v => v.Last());
+
+            // Answer: 933
+            Console.WriteLine($"========= Total sum of extrapolated values: {totalSum} =========");
         }
 
         private void ReadPuzzleInput()
@@ -91,6 +98,31 @@ namespace iAM.AdventOfCode._2023
                 }
 
                 var newInitVal = lastInitValue + newValues.Last();
+                newValues.Add(newInitVal);
+
+                this.PuzzleMeasurements[measurements].newVals.AddRange(newValues);
+            }
+        }
+        
+        private void CalculateNewValuesInLineBackwards()
+        {
+            for (var measurements = 0; measurements < this.PuzzleMeasurements.Count; measurements++)
+            {
+                var valueDiffs = Enumerable.Reverse(this.PuzzleMeasurements[measurements].valueDiffs).ToList();
+                var lastInitValue = this.PuzzleMeasurements[measurements].initialVals.First();
+
+                var newValues = new List<long>();
+
+                for (var diffLine = 0; diffLine < valueDiffs.Count() - 1; diffLine++)
+                {
+                    var lastDiff = newValues.Any() ? newValues.Last() : valueDiffs[diffLine].First();
+                    var lastDiffLineToAdd = valueDiffs[diffLine + 1].First();
+
+                    var newVal = lastDiffLineToAdd - lastDiff;
+                    newValues.Add(newVal);
+                }
+
+                var newInitVal = lastInitValue - newValues.Last();
                 newValues.Add(newInitVal);
 
                 this.PuzzleMeasurements[measurements].newVals.AddRange(newValues);
