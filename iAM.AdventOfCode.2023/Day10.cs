@@ -1,30 +1,28 @@
 ﻿using iAM.AdventOfCode.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace iAM.AdventOfCode._2023
 {
     public class Day10 : AoCDay
     {
-        public List<(int lineNumber, List<char> original, Dictionary<Point, (Point from, Point to)> coordinates)> PuzzleMeasurements { get; set; }
-        public Point StartCoord { get; set; }
-        public List<Point> FromList { get; set; }
+        public List<(int lineNumber, List<char> original, Dictionary<Coordinate, (Coordinate from, Coordinate to)> coordinates)> PuzzleMeasurements { get; set; }
+        public Coordinate StartCoord { get; set; }
+        public List<Coordinate> ExclusionList { get; set; }
 
         public Day10() : base(10, true, false)
         {
             PuzzleAltFilePath = @"Examples\Day10_small.txt";
-            FromList = new();
+            ExclusionList = [];
         }
 
         public override void Puzzle1Content()
         {
             ReadPuzzleInput();
             FillCoordinates();
-            FindConnectingLoop(startCoord: true);
+            FindStartCoord();
+
+            var count = PerformLoopSearch();
+
+            Console.WriteLine($"========= Total steps to be on the half: {count} =========");
         }
 
         public override void Puzzle2Content()
@@ -32,10 +30,48 @@ namespace iAM.AdventOfCode._2023
             throw new NotImplementedException();
         }
 
+        private int PerformLoopSearch()
+        {
+            var result = FindConnectingCoordinates(StartCoord);
+            var count = 0;
+            do
+            {
+                result = LoopAndPrune(result);
+                count++;
+            }
+            while (result.Any());
+
+            return count;
+            
+        }
+
+        private IEnumerable<Coordinate> LoopAndPrune(IEnumerable<Coordinate> input)
+        {
+            List<Coordinate> prunedResult = new() ;
+
+            foreach (var coordinate in input)
+            {
+                this.ExclusionList.Add(coordinate);
+
+                var res = FindConnectingCoordinates(coordinate);
+                prunedResult.AddRange(res.Except(this.ExclusionList));
+            }
+
+            return prunedResult;
+        }
+
+        private IEnumerable<Coordinate> FindConnectingCoordinates(Coordinate searchForCoord)
+        {
+            return this.PuzzleMeasurements.SelectMany(m => m.coordinates
+                                                .Where(item => item.Value.from == searchForCoord || item.Value.to == searchForCoord)
+                                                .Select(coord => coord.Key));
+
+        }
+
         private void ReadPuzzleInput()
         {
-            var lines = FileReader.ReadInputValues<string>(PuzzleAltFilePath, '\n');
-            this.PuzzleMeasurements = new List<(int, List<char>, Dictionary<Point, (Point, Point)>)>();
+            var lines = FileReader.ReadInputValues<string>(Puzzle1FilePath, '\n');
+            this.PuzzleMeasurements = new List<(int, List<char>, Dictionary<Coordinate, (Coordinate, Coordinate)>)>();
 
             var lineCounter = 0;
             foreach (var line in lines)
@@ -51,21 +87,20 @@ namespace iAM.AdventOfCode._2023
             var measurements = this.PuzzleMeasurements;
             for (var line = 0; line < measurements.Count; line++)
             {
-                var dict = new Dictionary<Point, (Point from, Point to)>();
+                var dict = new Dictionary<Coordinate, (Coordinate from, Coordinate to)>();
                 var tubeNumber = 0;
 
                 foreach (var c in measurements[line].original)
                 {
-                    var here = new Point(tubeNumber, measurements[line].lineNumber);
+                    var here = new Coordinate(tubeNumber, measurements[line].lineNumber);
                     var fromTo = TranslateCharToCoordinate(c, tubeNumber, measurements[line].lineNumber);
-
+                    fromTo = TranslateNegativesToPeriods(fromTo);
                     this.PuzzleMeasurements[line].coordinates.Add(here, fromTo);
                     tubeNumber++;
                 }
             }
         }
-
-        private (Point from, Point to) TranslateCharToCoordinate(char input, int x, int y)
+        private (Coordinate from, Coordinate to) TranslateCharToCoordinate(char input, int x, int y)
         {
             switch (input)
             {
@@ -90,62 +125,27 @@ namespace iAM.AdventOfCode._2023
             }
         }
 
-        private List<Point> FindConnectingLoop(Point? input = null, Point? source = null, bool startCoord = false)
+        private (Coordinate from, Coordinate to) TranslateNegativesToPeriods((Coordinate from, Coordinate to) input)
         {
-            var possibleSteps = new List<Point>();
-            var findings = new List<Point>();
-
-            if (startCoord)
+            var output = input;
+            if(output.from.X < 0  || output.from.Y < 0)
             {
-                FindStartCoord();
-                var list = this.PuzzleMeasurements.SelectMany(x => x.coordinates
-                                                   .Where(item => item.Value.from.Equals(this.StartCoord) || item.Value.to.Equals(this.StartCoord))
-                                                   .Select(coord => coord.Key)); 
-                findings.AddRange(list);
-            }
-            else
-            {
-                var list = this.PuzzleMeasurements.SelectMany(x => x.coordinates
-                                                    .Where(item => item.Value.from.Equals(input) || item.Value.to.Equals(input))
-                                                    .Select(coord => coord.Key));
-                findings.AddRange(list);
+                output.from = new Coordinate(888, 888);
             }
 
-            if(!findings.Any())
+            if (output.to.X < 0 || output.to.Y < 0)
             {
-                return null;
+                output.to = new Coordinate(888, 888);
             }
-
-            foreach (var possibleStep in findings)
-            {
-                if(this.FromList.Contains(possibleStep))
-                {
-                    continue;
-                }
-
-                this.FromList.Add(possibleStep);
-
-                if (possibleStep.Equals(this.StartCoord))
-                {
-                    continue;
-                }
-                var results = FindConnectingLoop(possibleStep);
-
-                if (results is null)
-                {
-                    continue;
-                }
-
-                possibleSteps.Add(possibleStep);
-            }
-
-            return possibleSteps;
+            return output;
         }
 
         private void FindStartCoord()
         {
-            var list = this.PuzzleMeasurements.SelectMany(x => x.coordinates.Where(x => x.Value.Equals((new Point(999, 999), new Point(999, 999))))).Single();
+            var list = this.PuzzleMeasurements.SelectMany(x => x.coordinates.Where(x => x.Value.Equals((new Coordinate(999, 999), new Coordinate(999, 999))))).Single();
             this.StartCoord = list.Key;
         }
     }
+
+    public record Coordinate(int X, int Y);
 }
