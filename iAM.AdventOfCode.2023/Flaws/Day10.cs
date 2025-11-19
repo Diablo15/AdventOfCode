@@ -24,24 +24,24 @@ class Program
     {
         var lines = Lines;
         int rows = lines.Length;
-int cols = 0;
-foreach (var line in lines)
-    cols = Math.Max(cols, line.Length);
+        int cols = 0;
+        foreach (var line in lines)
+            cols = Math.Max(cols, line.Length);
 
-char[,] grid = new char[rows, cols];
-(int r, int c) start = (-1, -1);
+        char[,] grid = new char[rows, cols];
+        (int r, int c) start = (-1, -1);
 
-for (int r = 0; r < rows; r++)
-{
-    var line = lines[r];
-    for (int c = 0; c < cols; c++)
-    {
-        char ch = c < line.Length ? line[c] : '.';
-        grid[r, c] = ch;
-        if (ch == 'S')
-            start = (r, c);
-    }
-}
+        for (int r = 0; r < rows; r++)
+        {
+            var line = lines[r];
+            for (int c = 0; c < cols; c++)
+            {
+                char ch = c < line.Length ? line[c] : '.';
+                grid[r, c] = ch;
+                if (ch == 'S')
+                    start = (r, c);
+            }
+        }
 
         if (start.r == -1)
         {
@@ -49,17 +49,19 @@ for (int r = 0; r < rows; r++)
             return;
         }
 
-        // Determine which directions S connects to
-        var sNeighbors = GetStartConnections(grid, rows, cols, start.r, start.c);
+        // Figure out which two directions S connects to
+        var sDirs = GetStartConnections(grid, rows, cols, start.r, start.c);
 
-        // BFS along the loop, using only valid pipe connections
+        // Build distance map and also record which cells are on the main loop
         int[,] dist = new int[rows, cols];
+        bool[,] onLoop = new bool[rows, cols];
         for (int r = 0; r < rows; r++)
             for (int c = 0; c < cols; c++)
                 dist[r, c] = -1;
 
         var q = new Queue<(int r, int c)>();
         dist[start.r, start.c] = 0;
+        onLoop[start.r, start.c] = true;
         q.Enqueue(start);
 
         int maxDist = 0;
@@ -70,25 +72,81 @@ for (int r = 0; r < rows; r++)
             int d = dist[r, c];
             maxDist = Math.Max(maxDist, d);
 
-            foreach (var (nr, nc) in GetConnectedNeighbors(grid, rows, cols, r, c, sNeighbors))
+            foreach (var (nr, nc) in GetConnectedNeighbors(grid, rows, cols, r, c, sDirs))
             {
                 if (dist[nr, nc] == -1)
                 {
                     dist[nr, nc] = d + 1;
+                    onLoop[nr, nc] = true;
                     q.Enqueue((nr, nc));
                 }
             }
         }
 
-        Console.WriteLine($"Max distance: {maxDist}");
+        Console.WriteLine($"Part 1: Max distance = {maxDist}");
+
+        // Replace S with its actual pipe character for part 2 logic
+        char sPipe = InferStartPipeShape(sDirs);
+        grid[start.r, start.c] = sPipe;
+
+        // Part 2: count enclosed tiles using ray casting per row
+        long insideCount = 0;
+
+        for (int r = 0; r < rows; r++)
+        {
+            int crossings = 0;
+            char? lastCorner = null;
+
+            for (int c = 0; c < cols; c++)
+            {
+                if (onLoop[r, c])
+                {
+                    char ch = grid[r, c];
+
+                    // Pure vertical edge crosses a vertical ray.
+                    if (ch == '|')
+                    {
+                        crossings++;
+                    }
+                    else if (ch == 'F' || ch == 'L')
+                    {
+                        // Start of a corner pair.
+                        lastCorner = ch;
+                    }
+                    else if (ch == '7' || ch == 'J')
+                    {
+                        // End of a corner pair; some pairs count as one crossing.
+                        if (lastCorner.HasValue)
+                        {
+                            char a = lastCorner.Value;
+                            char b = ch;
+                            // F-J and L-7 go from outside to inside or vice versa, so they cross.
+                            // F-7 and L-J are horizontal-only and do not cross.
+                            if ((a == 'F' && b == 'J') || (a == 'L' && b == '7'))
+                            {
+                                crossings++;
+                            }
+                            lastCorner = null;
+                        }
+                    }
+                    // '-' does not affect crossings for a vertical ray.
+                }
+                else
+                {
+                    // Ground tile: inside if we have seen an odd number of crossings so far.
+                    if ((crossings % 2) == 1)
+                        insideCount++;
+                }
+            }
+        }
+
+        Console.WriteLine($"Part 2: Enclosed tiles = {insideCount}");
     }
 
     private static List<(int dr, int dc)> GetStartConnections(
         char[,] grid, int rows, int cols, int sr, int sc)
     {
         var result = new List<(int dr, int dc)>();
-
-        // For each cardinal direction, check if neighbor connects back to S
         var dirs = new[] { North, South, West, East };
 
         foreach (var (dr, dc) in dirs)
@@ -105,7 +163,6 @@ for (int r = 0; r < rows; r++)
                     int backR = nr + cdr, backC = nc + cdc;
                     if (backR == sr && backC == sc)
                     {
-                        // Neighbor pipe connects back to S in this direction
                         result.Add((dr, dc));
                         break;
                     }
@@ -142,11 +199,9 @@ for (int r = 0; r < rows; r++)
             if (nch == '.')
                 continue;
 
-            // Neighbor must also have a connection back to (r,c)
             (int backDr, int backDc) = (-dr, -dc);
             if (nch == 'S')
             {
-                // Check if S allows connection in that back direction
                 foreach (var sdir in sDirs)
                 {
                     if (sdir == (backDr, backDc))
@@ -172,9 +227,41 @@ for (int r = 0; r < rows; r++)
 
     private static bool InBounds(int rows, int cols, int r, int c)
         => r >= 0 && r < rows && c >= 0 && c < cols;
+
+    private static char InferStartPipeShape(List<(int dr, int dc)> sDirs)
+    {
+        // sDirs should contain exactly two directions.
+        var a = sDirs[0];
+        var b = sDirs[1];
+
+        // Normalize order for simplicity.
+        (int dr, int dc) d1 = a;
+        (int dr, int dc) d2 = b;
+
+        // Same column => vertical.
+        if ((d1 == North && d2 == South) || (d1 == South && d2 == North))
+            return '|';
+
+        // Same row => horizontal.
+        if ((d1 == West && d2 == East) || (d1 == East && d2 == West))
+            return '-';
+
+        // Otherwise it's a corner; figure out which.
+        bool hasNorth = (d1 == North) || (d2 == North);
+        bool hasSouth = (d1 == South) || (d2 == South);
+        bool hasWest  = (d1 == West)  || (d2 == West);
+        bool hasEast  = (d1 == East)  || (d2 == East);
+
+        if (hasNorth && hasEast)  return 'L'; // connects north & east
+        if (hasNorth && hasWest)  return 'J'; // connects north & west
+        if (hasSouth && hasWest)  return '7'; // connects south & west
+        if (hasSouth && hasEast)  return 'F'; // connects south & east
+
+        throw new InvalidOperationException("Cannot infer S pipe shape.");
+    }
 	
 	private static string[] Lines = [
-"		L-|---|.F--F7F-.FF-F-7FL|.F7.FF|7FL7.JF7F7-F..FF-777-7F|-7.FF--F7FL-7-|7F|7--J.F-7-|-F77.F-FL-L.F--|.L77-J-7-FF-7F|---7F77F|7F-|-L-7-F7..FF-",
+"L-|---|.F--F7F-.FF-F-7FL|.F7.FF|7FL7.JF7F7-F..FF-777-7F|-7.FF--F7FL-7-|7F|7--J.F-7-|-F77.F-FL-L.F--|.L77-J-7-FF-7F|---7F77F|7F-|-L-7-F7..FF-",
 "|7.|77L7LL7|7|J-F-7J.--7|7-FF-7|LJ-77L7LFJ|JFFFJ7|7FFL7L7|F777.7LJ.LJ.||7JF7|L-|LF7.FFJ-7.L|LFJF7LFF--||J|JF-F7.|7JF|.|-LLLF77||.|.|F|F7J-LJ",
 "7J-JL7--JLLJ7J|.L-7F-J.J|J.LJLJFFL7|JFJLJ---7-LJF7-FLL7--FJL77F7-|7|L-7L|FJ-JJ7L--J-7J.FJ.FJ-L7LF-J|7.-J.J7LLLJ7FF--7.J-L.LJJL7J--|-FJFJ|J||",
 "7.7J.L|JF|FJ|L--J.|FJF7-F-7.LF.FL7.7J|.7|7|L7|.|.LFJ7.|LFL-7L77|FF77..F---L.|FJ--J7LJ|LL.|....7L|.7-F.|FJF7.||L-F|-.F-J7|F.FFL7|J-JL7-7-|-F-",
