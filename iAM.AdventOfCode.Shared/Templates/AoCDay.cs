@@ -4,14 +4,19 @@
     {
         private int DayNumber { get; init; } = dayNumber;
 
-        protected string Puzzle1FilePath { get; init; } = $"Day{dayNumber}Puzzle1.txt";
+        protected bool UseAltFile { get; init; } = false;
 
-        protected string Puzzle2FilePath { get; init; } = $"Day{dayNumber}Puzzle2.txt";
+        protected string Puzzle1FilePath { get; set; } = $"Day{dayNumber}Puzzle1.txt";
 
-        protected string PuzzleAltFilePath { get; set; }
+        protected string Puzzle2FilePath { get; set; } = $"Day{dayNumber}Puzzle2.txt";
+
+        protected string PuzzleAltFilePath { get; set; } = string.Empty;
 
         public void StartDay()
         {
+            Puzzle1FilePath = UseAltFile ? PuzzleAltFilePath : Puzzle1FilePath;
+            Puzzle2FilePath = UseAltFile ? PuzzleAltFilePath : Puzzle2FilePath;
+
             Console.WriteLine($"******** Day {DayNumber} ********");
             if (runPuzzle1)
             {
