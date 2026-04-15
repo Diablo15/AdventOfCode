@@ -5,7 +5,7 @@ public static class FileReader
     static public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ', bool ignoreWhitLine = false)
     {
         var outputList = new List<T>();
-        using (var reader = new StreamReader(@$"{AppDomain.CurrentDomain.BaseDirectory}Files\{path}"))
+        using (var reader = new StreamReader($"{AppDomain.CurrentDomain.BaseDirectory}Files//{path}"))
         {
             while (!reader.EndOfStream)
             {
