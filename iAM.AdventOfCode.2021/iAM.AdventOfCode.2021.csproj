@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <RootNamespace>iAM.AdventOfCode._2021</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -21,10 +21,6 @@
       <Content Include="Files\Day2Puzzle1.csv">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\iAM.AdventOfCode.Shared\iAM.AdventOfCode.Shared.csproj" />
     </ItemGroup>
 
 </Project>
