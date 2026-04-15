@@ -2,28 +2,17 @@ using iAM.AdventOfCode.Helpers;
 
 namespace iAM.AdventOfCode._2021;
 
-public class Day1
+public class Day1 : AocDay
 {
     private IEnumerable<int> PuzzleOneMeasurements { get; set; }
     
-    private string Puzzle1FilePath { get; set; } = "Day1Puzzle1.csv";
-
-    public Day1()
+    public Day1() : base(1, true, true)
     {
         this.PuzzleOneMeasurements = new List<int>();
     }
-    
-    public void StartDay1()
+
+    public override void Puzzle1Content()
     {
-        Console.WriteLine("******** Day 1 ********");
-        this.Puzzle1();
-        this.Puzzle2();
-    }
-    
-    private void Puzzle1()
-    {
-        Console.WriteLine("******** Puzzle 1 ********");
-        
         this.PuzzleOneMeasurements = FileReader.ReadInputValues<int>(this.Puzzle1FilePath, ';');
         
         var total = this.CheckIncreasedMeasurements(this.PuzzleOneMeasurements.ToList());
@@ -31,10 +20,8 @@ public class Day1
         Console.WriteLine($"1.========================== Total increased values: {total}");
     }
     
-    private void Puzzle2()
+    public override void Puzzle2Content()
     {
-        Console.WriteLine("******** Puzzle 2 ********");
-
         var result = this.EnrichMeasurements(this.PuzzleOneMeasurements.ToList());
         
         var total = this.CheckIncreasedMeasurements(result.ToList());
