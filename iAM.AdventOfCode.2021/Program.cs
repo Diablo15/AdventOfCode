@@ -4,9 +4,10 @@ using iAM.AdventOfCode._2021;
 
 try
 {
-    new Day1().StartDay();
+    // new Day1().StartDay();
     //new Day2().StartDay2();
     // new Day3().StartDay3();
+    new Day4().StartDay();
 }
 catch (Exception ex)
 {
