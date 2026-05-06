@@ -9,7 +9,7 @@ public class Day4 : AocDay
     private IEnumerable<int> DrawnNumbers { get; set; }
     private List<BingoCard> BingoCards { get; set; } = new();
 
-    public Day4() : base(4, true, false)
+    public Day4() : base(4, false, true)
     {
         this.PuzzleAltFilePath = "..//Examples//Day4Puzzle1Alt.txt";
         this.UseAltFile = false;
@@ -29,7 +29,14 @@ public class Day4 : AocDay
 
     public override void Puzzle2Content()
     {
-        throw new NotImplementedException();
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, '\n', true);
+        SelectDrawnNumbers(this.PuzzleOneMeasurements);
+        CreateBingoCards(this.PuzzleOneMeasurements);
+
+        var result = StartGameLoser();
+
+        // Losing score: 1830
+        Console.WriteLine($"Result -- Losing score: {result}");
     }
 
     private void SelectDrawnNumbers(IEnumerable<string> input)
@@ -58,10 +65,11 @@ public class Day4 : AocDay
 
     private int StartGame()
     {
+        var bingoCards = this.BingoCards;
         foreach (var drawnNumber in this.DrawnNumbers)
         {
             CrossOutNumber(drawnNumber);
-            var bingo = CheckOnBingo();
+            var bingo = CheckOnBingo(bingoCards);
 
             if (bingo is not null)
             {
@@ -73,13 +81,39 @@ public class Day4 : AocDay
         throw new Exception("xxxxxxxxx No bingo xxxxxxxxx");
     }
 
-    private BingoCard? CheckOnBingo()
+    private int StartGameLoser()
     {
-        foreach (var card in this.BingoCards)
+        var bingoCards = this.BingoCards;
+        foreach (var drawnNumber in this.DrawnNumbers)
+        {
+            CrossOutNumber(drawnNumber);
+
+            var bingo = CheckOnBingo(bingoCards);
+
+            if (bingo is not null)
+            {
+                if (this.BingoCards.Count > 1 && !drawnNumber.Equals(this.DrawnNumbers.Last()))
+                {
+                    RemoveBingoHorizontally();
+                    RemoveBingoVertically();
+                    continue;
+                }
+
+                var uncalledNumbers = bingo.Numbers.Where(v => !v.Value).Select(k => k.Key);
+                return uncalledNumbers.Sum() * drawnNumber;
+            }
+        }
+
+        throw new Exception("xxxxxxxxx No bingo xxxxxxxxx");
+    }
+
+    private BingoCard? CheckOnBingo(IEnumerable<BingoCard> bingoCards)
+    {
+        foreach (var card in bingoCards)
         {
             var lines = card.Numbers.Values.Chunk(5);
 
-            if (CheckBingoHorizontally(lines) || CheckBingoVertically(lines) || CheckBingoDiagonally(lines))
+            if (CheckBingoHorizontally(lines) || CheckBingoVertically(lines))
             {
                 return card;
             }
@@ -94,6 +128,27 @@ public class Day4 : AocDay
         var isBingo = cardInput.Any(line => line.All(nrs => nrs));
 
         return isBingo ? true : false;
+    }
+
+    private void RemoveBingoHorizontally()
+    {
+        // Remove horizontal
+        var removeList = this.BingoCards.Where(card =>
+            card.Numbers.Values.Chunk(5).Any(line => line.All(nrs => nrs))
+            ).ToList();
+        
+        removeList.ForEach(card => this.BingoCards.Remove(card));
+    }
+
+    private void RemoveBingoVertically()
+    {
+        // Remove vertically
+        var removeList = this.BingoCards.Where(card =>
+            Enumerable.Range(0, 5)
+                .Any(col => card.Numbers.Values.Chunk(5).All(row => row[col]))
+        ).ToList();
+
+        removeList.ForEach(card => this.BingoCards.Remove(card));
     }
 
     private bool CheckBingoVertically(IEnumerable<bool[]> cardInput)
