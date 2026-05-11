@@ -8,7 +8,7 @@ public class Day5 : AocDay
     private IEnumerable<Tuple<Coordinate, Coordinate>> PuzzleOneMeasurements { get; set; }
     private IEnumerable<Coordinate> PipeCoordinates { get; set; } = new List<Coordinate>();
 
-    public Day5() : base(5, true, false)
+    public Day5() : base(5, false, true)
     {
         this.PuzzleAltFilePath = "..//Examples//Day5Puzzle1Alt.txt";
         this.UseAltFile = false;
@@ -17,7 +17,7 @@ public class Day5 : AocDay
     public override void Puzzle1Content()
     {
         PrepareData();
-        CreateCoordinateRange();
+        CreateCoordinateRange(false);
 
         var counter = this.PipeCoordinates.Where(c => c.Hit > 1).Select(c => c).ToList();
         
@@ -27,8 +27,13 @@ public class Day5 : AocDay
 
     public override void Puzzle2Content()
     {
-        throw new NotImplementedException();
-    }
+        PrepareData();
+        CreateCoordinateRange(true);
+
+        var counter = this.PipeCoordinates.Where(c => c.Hit > 1).Select(c => c).ToList();
+        
+        // Answer: 21140
+        Console.WriteLine($"Result -- Total overlapping: {counter.Count()} ");    }
 
     private void PrepareData()
     {
@@ -49,13 +54,13 @@ public class Day5 : AocDay
         this.PuzzleOneMeasurements = measurements;
     }
 
-    private void CreateCoordinateRange()
+    private void CreateCoordinateRange(bool diag)
     {
         var coordList = new List<Coordinate>();
         
         foreach (var coordinates in this.PuzzleOneMeasurements)
         {
-            var range = GetCoordinatesBetween(coordinates.Item1, coordinates.Item2);
+            var range = GetCoordinatesBetween(coordinates.Item1, coordinates.Item2, diagonally: diag);
             
             foreach (var pipeCoord in range)
             {
@@ -75,12 +80,12 @@ public class Day5 : AocDay
         }
     }
 
-    public IEnumerable<Coordinate> GetCoordinatesBetween(Coordinate start, Coordinate end, double step = 1.0)
+    public IEnumerable<Coordinate> GetCoordinatesBetween(Coordinate start, Coordinate end, double step = 1.0, bool diagonally = false)
     {
         double latDiff = end.Latitude - start.Latitude;
         double lonDiff = end.Longitude - start.Longitude;
         
-        if (latDiff != 0 && lonDiff != 0)
+        if (!diagonally && latDiff != 0 && lonDiff != 0)
         {
             yield break;
         }
