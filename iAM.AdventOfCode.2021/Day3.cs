@@ -29,7 +29,7 @@ public class Day3
     {
         Console.WriteLine("******** Puzzle 1 ********");
         
-        this.PuzzleOneDiagnostics = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, ';');
+        this.PuzzleOneDiagnostics = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, ";");
         var gammaRates = this.ReadPositions(this.PuzzleOneDiagnostics.ToList());
         var list = (this.ConstructBinaryFromBits(gammaRates.ToList())).ToList();
         

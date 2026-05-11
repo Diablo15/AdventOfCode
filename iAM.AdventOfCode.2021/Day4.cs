@@ -17,7 +17,7 @@ public class Day4 : AocDay
 
     public override void Puzzle1Content()
     {
-        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, '\n', true);
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, "\n", true);
         SelectDrawnNumbers(this.PuzzleOneMeasurements);
         CreateBingoCards(this.PuzzleOneMeasurements);
 
@@ -29,7 +29,7 @@ public class Day4 : AocDay
 
     public override void Puzzle2Content()
     {
-        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, '\n', true);
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<string>(this.Puzzle1FilePath, "\n", true);
         SelectDrawnNumbers(this.PuzzleOneMeasurements);
         CreateBingoCards(this.PuzzleOneMeasurements);
 

@@ -2,7 +2,7 @@ namespace iAM.AdventOfCode.Helpers;
 
 public static class FileReader
 {
-    static public IEnumerable<T> ReadInputValues<T>(string path, char delimiter = ' ', bool ignoreWhitLine = false)
+    static public IEnumerable<T> ReadInputValues<T>(string path, string delimiter = " ", bool ignoreWhitLine = false)
     {
         var outputList = new List<T>();
         using (var reader = new StreamReader($"{AppDomain.CurrentDomain.BaseDirectory}Files//{path}"))
@@ -41,6 +41,30 @@ public static class FileReader
     }
 
     static public IEnumerable<T> ValuesSplitter<T>(string line, char delimiter)
+    {
+        var result = new List<T>();
+
+        if (!string.IsNullOrEmpty(line))
+        {
+            var valueArray = line.Split(new[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var stringValue in valueArray)
+                try
+                {
+                    var value = (T)Convert.ChangeType(stringValue.Trim(), typeof(T));
+                    result.Add(value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error converting value '{stringValue}' to type {typeof(T).Name}: {ex.Message}");
+                    // Handle conversion error as needed
+                }
+        }
+
+        return result;
+    }
+    
+    static public IEnumerable<T> ValuesSplitter<T>(string line, string delimiter)
     {
         var result = new List<T>();
 

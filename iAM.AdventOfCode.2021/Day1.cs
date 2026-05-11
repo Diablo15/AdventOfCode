@@ -13,7 +13,7 @@ public class Day1 : AocDay
 
     public override void Puzzle1Content()
     {
-        this.PuzzleOneMeasurements = FileReader.ReadInputValues<int>(this.Puzzle1FilePath, ';');
+        this.PuzzleOneMeasurements = FileReader.ReadInputValues<int>(this.Puzzle1FilePath, ";");
         
         var total = this.CheckIncreasedMeasurements(this.PuzzleOneMeasurements.ToList());
         
