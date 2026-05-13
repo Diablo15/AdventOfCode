@@ -10,7 +10,8 @@ try
     // new Day4().StartDay();
     // new Day5().StartDay();
     // new Day6().StartDay();
-    new Day7().StartDay();
+    // new Day7().StartDay();
+    new Day8().StartDay();
 }
 catch (Exception ex)
 {
